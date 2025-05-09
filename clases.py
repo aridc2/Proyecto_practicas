@@ -14,13 +14,13 @@ class Proyecto:
 
     @property
     def ID(self):
-        return self.__ID
+        return self.__ID_pr
     @ID.setter
     def ID(self,nuevo_ID):
-        self.__ID=nuevo_ID
+        self.__ID_pr=nuevo_ID
     @ID.deleter
     def ID(self):
-        del self.__ID
+        del self.__ID_pr
 
     @property
     def CIF(self):
@@ -54,7 +54,7 @@ class Proyecto:
     
     @property
     def facturable(self):
-        return self.__estado
+        return self.__facturable
     @facturable.setter
     def facturable(self,nuevo_facturable):
         self.__facturable=nuevo_facturable
@@ -65,10 +65,10 @@ class Proyecto:
     @property
     def jefe_pr(self):
         return self.__jefe_pr
-    @facturable.setter
+    @jefe_pr.setter
     def jefe_pr(self,nuevo_jefe):
         self.__jefe_pr=nuevo_jefe
-    @facturable.deleter
+    @jefe_pr.deleter
     def jefe_pr(self):
         del self.__jefe_pr
 
@@ -85,10 +85,10 @@ class Proyecto:
     @property
     def fecha_fin(self):
         return self.__fecha_fin
-    @fecha_in.setter
+    @fecha_fin.setter
     def fecha_fin(self,nueva_fecha):
         self.__fecha_fin=nueva_fecha
-    @fecha_in.deleter
+    @fecha_fin.deleter
     def fecha_fin(self):
         del self.__fecha_fin
 
