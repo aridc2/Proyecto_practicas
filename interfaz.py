@@ -251,7 +251,52 @@ def ventana_actualizar_empresa():
 
     root.mainloop()
 
+def ventana_consultar_empresa():
 
+    root = tk.Tk()
+    root.geometry('800x400')
+    root.title('Gestor de proyectos')
+
+    def select():
+        CIF = CIF_entry.get()
+
+        if CIF == '':
+            tk.messagebox.showinfo('ALERT', 'Por favor introduzca el CIF para buscar la empresa')
+        else:
+            try:
+                con = mysql.connect(
+                    host='localhost',
+                    user='root',
+                    password='josegras',
+                    database='gestionProyectos'
+                )
+                cursor = con.cursor()
+                cursor.execute("SELECT Nombre, Tipo_sociedad, Sector, Localidad, N_Telefono FROM Empresa WHERE CIF = %s", (CIF,))
+                resultado = cursor.fetchone()
+                CIF_entry.delete(0, 'end')
+                con.close()
+
+                if resultado:
+                    # Crear instancia de Empresa
+                    nombre, tipo, sector, localidad, telefono = resultado
+                    empresa = Empresa(CIF, nombre, tipo, sector, localidad, telefono)
+                    resultado_label=tk.Label(root)
+                    resultado_label.config(text=str(empresa), justify="left")
+                    resultado_label.pack()
+                else:
+                    resultado_label.config(text="No se encontró ninguna empresa con ese CIF.")
+
+
+            except Exception as e:
+                tk.messagebox.showinfo('Error',str(e))
+
+    tk.Label(root, text='Introduzca CIF: ', font=('verdana', 13)).place(x=50, y=30)
+    CIF_entry = tk.Entry(root, font=('verdana', 13))
+    CIF_entry.place(x=220, y=30)
+
+    tk.Button(root, text='Buscar', command=select, font=('verdana', 13)).place(x=100, y=320)
+
+    root.mainloop()
 
 
 root = tk.Tk()
@@ -280,7 +325,7 @@ btn_style = {
 
 
 tk.Button(boton_frame, text="Insertar Empresa", command=ventana_inserccion_empresa, **btn_style).grid(row=0, column=0, pady=10, padx=20)
-#tk.Button(boton_frame, text="Consultar Empresas", command=abrir_consultar, **btn_style).grid(row=1, column=0, pady=10, padx=20)
+tk.Button(boton_frame, text="Consultar Empresas", command=ventana_consultar_empresa, **btn_style).grid(row=1, column=0, pady=10, padx=20)
 tk.Button(boton_frame, text="Actualizar Empresa", command=ventana_actualizar_empresa, **btn_style).grid(row=2, column=0, pady=10, padx=20)
 tk.Button(boton_frame, text="Eliminar Empresa", command=ventana_eliminar_empresa, **btn_style).grid(row=3, column=0, pady=10, padx=20)
 
