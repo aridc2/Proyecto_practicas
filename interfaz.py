@@ -1,19 +1,21 @@
 import tkinter as tk
-import tkinter.messagebox
+from tkinter import messagebox, ttk
 import mysql.connector as mysql
+from clases import *
 
 
 def ventana_inserccion_empresa():
     root.withdraw()
     insertar_win = tk.Toplevel()
-    insertar_win.geometry('800x400')
+    insertar_win.geometry('800x500')
     insertar_win.title('Gestor de proyectos')
+    insertar_win.config(bg="#eaf2f8")
 
     def insert():
         CIF = CIF_entry.get()
         nombre_empresa = nombre_empresa_entry.get()
-        tipo_sociedad = tipo_sociedad_entry.get()
-        Sector = Sector_entry.get()
+        tipo_sociedad = tipo_sociedad_combo.get()
+        Sector = Sector_combo.get()
         Localidad = Localidad_entry.get()
         telefono_empresa = telefono_empresa_entry.get()
 
@@ -36,48 +38,85 @@ def ventana_inserccion_empresa():
 
                 CIF_entry.delete(0, 'end')
                 nombre_empresa_entry.delete(0, 'end')
-                tipo_sociedad_entry.delete(0, 'end')
-                Sector_entry.delete(0, 'end')
+                tipo_sociedad_combo.set('')
+                Sector_combo.set('')
                 Localidad_entry.delete(0, 'end')
                 telefono_empresa_entry.delete(0, 'end')
 
                 con.close()
-            except Exception as e:#Guarda el error y lo imprime en una ventana emergente
+            except Exception as e: #Guarda el error y lo imprime en una ventana emergente
                 tk.messagebox.showinfo('Error',str(e))
 
     def cerrar_e_ir_menu():
         insertar_win.destroy()
         root.deiconify()
 
-    tk.Label(insertar_win, text='Introduzca CIF: ', font=('verdana', 13)).place(x=50, y=30)
-    CIF_entry = tk.Entry(insertar_win, font=('verdana', 13))
-    CIF_entry.place(x=220, y=30)
+    tipos_sociedad = [
+    "Sociedad Anónima", "Sociedad Limitada", "Sociedad Cooperativa",
+    "Sociedad Comanditaria", "Sociedad Civil", "Sociedad autonoma", "Sociedad colecctiva"
+    ]
 
-    tk.Label(insertar_win, text='Nombre empresa: ', font=('verdana', 13)).place(x=50, y=80)
-    nombre_empresa_entry = tk.Entry(insertar_win, font=('verdana', 13))
-    nombre_empresa_entry.place(x=220, y=80)
+    sectores = [
+    "Agricultura", "Pesca", "Minería", "Silvicultura", "Industria alimentaria",
+    "Construcción", "Metalurgia", "Automoción", "Química", "Textil", "Manufactura",
+    "Comercio", "Transporte y logística", "Hostelería y turismo", "Educación", "Sanidad",
+    "Servicios financieros", "Consuloría", "Tecnología", "Software",
+    "Consultoría especializada", "Startups tecnológicas", "ONG", "Asistencia social",
+    "Servicios culturales", "Formación personal"
+    ]
 
-    tk.Label(insertar_win, text='Tipo de sociedad: ', font=('verdana', 13)).place(x=50, y=130)
-    tipo_sociedad_entry = tk.Entry(insertar_win, font=('verdana', 13))
-    tipo_sociedad_entry.place(x=220, y=130)
+    titulo = tk.Label(insertar_win, text="Insertar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
+    titulo.pack(pady=20)
 
-    tk.Label(insertar_win, text='Sector: ', font=('verdana', 13)).place(x=50, y=180)
-    Sector_entry = tk.Entry(insertar_win, font=('verdana', 13))
-    Sector_entry.place(x=220, y=180)
+    form_frame = tk.Frame(insertar_win, bg="#eaf2f8")
+    form_frame.pack(pady=10)
 
-    tk.Label(insertar_win, text='Localidad: ', font=('verdana', 13)).place(x=50, y=230)
-    Localidad_entry = tk.Entry(insertar_win, font=('verdana', 13))
-    Localidad_entry.place(x=220, y=230)
+    
+    label_style = {"font": ("Helvetica", 12), "bg": "#eaf2f8", "fg": "#2e4053"}
+    entry_style = {"font": ("Helvetica", 12), "width": 30}
 
-    tk.Label(insertar_win, text='Teléfono empresa: ', font=('verdana', 13)).place(x=50, y=280)
-    telefono_empresa_entry = tk.Entry(insertar_win, font=('verdana', 13))
-    telefono_empresa_entry.place(x=220, y=280)
+    
+    tk.Label(form_frame, text="CIF:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
+    CIF_entry = tk.Entry(form_frame, **entry_style)
+    CIF_entry.grid(row=0, column=1)
 
-    tk.Button(insertar_win, text='Insertar', command=insert, font=('verdana', 13)).place(x=100, y=320) 
+    tk.Label(form_frame, text="Nombre Empresa:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
+    nombre_empresa_entry = tk.Entry(form_frame, **entry_style)
+    nombre_empresa_entry.grid(row=1, column=1)
 
-    tk.Button(insertar_win, text="Volver", command=cerrar_e_ir_menu).pack(pady=10)
+    tk.Label(form_frame, text="Tipo de Sociedad:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
+    tipo_sociedad_combo = ttk.Combobox(form_frame, values=tipos_sociedad, font=("Helvetica", 12), state="readonly", width=28)
+    tipo_sociedad_combo.grid(row=2, column=1)
 
-    root.mainloop()
+    tk.Label(form_frame, text="Sector:", **label_style).grid(row=3, column=0, sticky="e", padx=10, pady=10)
+    Sector_combo = ttk.Combobox(form_frame, values=sectores, font=("Helvetica", 12), state="readonly", width=28)
+    Sector_combo.grid(row=3, column=1)
+
+    tk.Label(form_frame, text="Localidad:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
+    Localidad_entry = tk.Entry(form_frame, **entry_style)
+    Localidad_entry.grid(row=4, column=1)
+
+    tk.Label(form_frame, text="Teléfono:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
+    telefono_empresa_entry = tk.Entry(form_frame, **entry_style)
+    telefono_empresa_entry.grid(row=5, column=1)
+
+    
+    btn_style = {
+        "font": ("Helvetica", 12, "bold"),
+        "width": 15,
+        "height": 1,
+        "bg": "#3498db",
+        "fg": "white",
+        "bd": 0,
+        "activebackground": "#2980b9",
+        "cursor": "hand2"
+    }
+
+    button_frame = tk.Frame(insertar_win, bg="#eaf2f8")
+    button_frame.pack(pady=20)
+
+    tk.Button(button_frame, text="Insertar", command=insert, **btn_style).grid(row=0, column=0, padx=10)
+    tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
 
 def ventana_eliminar_empresa():
     root = tk.Tk()
@@ -211,11 +250,6 @@ def ventana_actualizar_empresa():
     tk.Button(root, text='Update', command=update, font=('verdana', 13)).place(x=100, y=320)
 
     root.mainloop()
-
-
-
-
-
 
 
 
