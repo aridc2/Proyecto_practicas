@@ -3,6 +3,9 @@ from tkinter import messagebox, ttk
 import mysql.connector as mysql
 from clases import *
 
+###################################################
+# ~~~~~~~~~~~~~~~~~~~EMPRESAS~~~~~~~~~~~~~~~~~~~~ #
+###################################################
 
 def ventana_inserccion_empresa():
     root.withdraw()
@@ -119,9 +122,12 @@ def ventana_inserccion_empresa():
     tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
 
 def ventana_eliminar_empresa():
-    root = tk.Tk()
-    root.geometry('800x400')
-    root.title('Gestor de proyectos')
+
+    root.withdraw()
+    eliminar_win = tk.Toplevel()
+    eliminar_win.geometry('600x300')
+    eliminar_win.title('Gestor de proyectos')
+    eliminar_win.config(bg="#eaf2f8")
 
     def delet():
         CIF = CIF_entry.get()
@@ -137,8 +143,8 @@ def ventana_eliminar_empresa():
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
-                cursor.execute("DELETE FROM Proyecto WHERE CIF = %s", (CIF))
-                cursor.execute("DELETE FROM Empresa WHERE CIF = %s", (CIF))
+                cursor.execute("DELETE FROM Proyecto WHERE CIF = %s", (CIF,))
+                cursor.execute("DELETE FROM Empresa WHERE CIF = %s", (CIF,))
                 con.commit()
                 CIF_entry.delete(0, 'end')
                 tk.messagebox.showinfo('Status', 'Borrado correctamente')
@@ -147,13 +153,41 @@ def ventana_eliminar_empresa():
             except Exception as e:
                 tk.messagebox.showinfo('Error',str(e))
 
-    tk.Label(root, text='Introduzca CIF: ', font=('verdana', 13)).place(x=50, y=30)
-    CIF_entry = tk.Entry(root, font=('verdana', 13))
-    CIF_entry.place(x=220, y=30)
+    def cerrar_e_ir_menu():
+        eliminar_win.destroy()
+        root.deiconify()
 
-    tk.Button(root, text='Borrar', command=delet, font=('verdana', 13)).place(x=100, y=320)
+    titulo = tk.Label(eliminar_win, text="Eliminar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
+    titulo.pack(pady=20)
 
-    root.mainloop()
+    
+    form_frame = tk.Frame(eliminar_win, bg="#eaf2f8")
+    form_frame.pack(pady=10)
+
+    tk.Label(form_frame, text="CIF de la empresa:", font=("Helvetica", 13), bg="#eaf2f8").grid(row=0, column=0, padx=10, pady=10)
+    CIF_entry = tk.Entry(form_frame, font=("Helvetica", 13), width=30)
+    CIF_entry.grid(row=0, column=1, padx=10, pady=10)
+
+    
+    btn_frame = tk.Frame(eliminar_win, bg="#eaf2f8")
+    btn_frame.pack(pady=20)
+
+    btn_style = {
+        "font": ("Helvetica", 12, "bold"),
+        "width": 15,
+        "height": 2,
+        "bg": "#e74c3c",
+        "fg": "white",
+        "bd": 0,
+        "activebackground": "#c0392b",
+        "cursor": "hand2"
+    }
+
+    tk.Button(btn_frame, text="Eliminar", command=delet, **btn_style).grid(row=0, column=0, padx=10)
+
+    tk.Button(btn_frame, text="Volver", command=cerrar_e_ir_menu, bg="#3498db", fg="white", activebackground="#7f8c8d", font=("Helvetica", 12, "bold"), width=15, height=2, bd=0, cursor="hand2").grid(row=0, column=1, padx=10)
+
+    eliminar_win.mainloop()
 
 def ventana_actualizar_empresa():
 
@@ -285,6 +319,8 @@ def ventana_consultar_empresa():
                     resultado_label.pack()
                 else:
                     resultado_label.config(text="No se encontró ninguna empresa con ese CIF.")
+
+
 
 
             except Exception as e:
