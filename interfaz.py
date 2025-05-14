@@ -15,6 +15,7 @@ def ventana_inserccion_empresa():
     root.withdraw()
     insertar_win = tk.Toplevel()
     insertar_win.geometry('800x500')
+    insertar_win.minsize(600,500)
     insertar_win.title('Gestor de proyectos')
     insertar_win.config(bg="#eaf2f8")
 
@@ -27,7 +28,7 @@ def ventana_inserccion_empresa():
         telefono_empresa = telefono_empresa_entry.get()
 
         if CIF == '' or nombre_empresa == '' or telefono_empresa == '' or tipo_sociedad=='' or Sector=='' or Localidad== '':
-            tk.messagebox.showinfo('ALERT', 'Por favor introduzca todos los datos')
+            tk.messagebox.showerror('ALERT', 'Por favor introduzca todos los datos')
         else:
             try:
                 con = mysql.connect(
@@ -52,7 +53,7 @@ def ventana_inserccion_empresa():
 
                 con.close()
             except Exception as e: #Guarda el error y lo imprime en una ventana emergente
-                tk.messagebox.showinfo('Error',str(e))
+                tk.messagebox.showerror('Error',str(e))
 
     def cerrar_e_ir_menu():
         insertar_win.destroy()
@@ -116,6 +117,7 @@ def ventana_eliminar_empresa():
     root.withdraw()
     eliminar_win = tk.Toplevel()
     eliminar_win.geometry('600x300')
+    eliminar_win.minsize(600,300)
     eliminar_win.title('Gestor de proyectos')
     eliminar_win.config(bg="#eaf2f8")
 
@@ -123,7 +125,7 @@ def ventana_eliminar_empresa():
         CIF = CIF_entry.get()
 
         if CIF == '':
-            tk.messagebox.showinfo('ALERT', 'Por favor introduzca el CIF para eliminar la empresa')
+            tk.messagebox.showerror('Error', 'Por favor introduzca el CIF para eliminar la empresa')
         else:
             try:
                 con = mysql.connect(
@@ -141,7 +143,7 @@ def ventana_eliminar_empresa():
 
                 con.close()
             except Exception as e:
-                tk.messagebox.showinfo('Error',str(e))
+                tk.messagebox.showerror('Error',str(e))
 
     def cerrar_e_ir_menu():
         eliminar_win.destroy()
@@ -182,7 +184,8 @@ def ventana_eliminar_empresa():
 def ventana_actualizar_empresa():
     root.withdraw()
     actualizar_win = tk.Toplevel()
-    actualizar_win.geometry('800x500')
+    actualizar_win.geometry('800x300')
+    actualizar_win.minsize(500,300)
     actualizar_win.title('Gestor de proyectos')
     actualizar_win.config(bg="#eaf2f8")
 
@@ -190,7 +193,7 @@ def ventana_actualizar_empresa():
         CIF = CIF_entry.get()
         
         if CIF == '':
-            tk.messagebox.showinfo('ALERT', 'Por favor introduzca el CIF para poder actualizar los datos')
+            tk.messagebox.showerror('Error', 'Por favor introduzca el CIF para poder actualizar los datos')
         else:
             try:
                 con = mysql.connect(
@@ -212,7 +215,7 @@ def ventana_actualizar_empresa():
 
                 con.close()
             except Exception as e:
-                tk.messagebox.showinfo('Error',str(e))
+                tk.messagebox.showerror('Error',str(e))
 
     def cerrar_e_ir_menu():
         actualizar_win.destroy()
@@ -223,6 +226,7 @@ def ventana_actualizar_empresa():
         actualizar_win.withdraw()
         actualizar_campos_win = tk.Toplevel()
         actualizar_campos_win.geometry('800x500')
+        actualizar_campos_win.minsize(500,500)
         actualizar_campos_win.title('Gestor de proyectos')
         actualizar_campos_win.config(bg="#eaf2f8")
 
@@ -273,8 +277,8 @@ def ventana_actualizar_empresa():
                     cursor.execute(sql, valores)
 
                 con.commit()
-                if cursor.rowcount == 0:
-                    tk.messagebox.showinfo('Resultado', 'No se encontró ninguna empresa con ese CIF')
+                if nombre_empresa == '' and telefono_empresa == '' and tipo_sociedad=='' and Sector=='' and Localidad== '':
+                    tk.messagebox.showerror('Error', 'No se ha modificado ningun campo')
                 else:
                     tk.messagebox.showinfo('Status', 'Datos actualizados correctamente')
 
@@ -287,7 +291,7 @@ def ventana_actualizar_empresa():
 
                 con.close()
             except Exception as e:
-                tk.messagebox.showinfo('Error',str(e))
+                tk.messagebox.showerror('Error',str(e))
 
         titulo = tk.Label(actualizar_campos_win, text="Actualizar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
         titulo.pack(pady=20)
@@ -374,6 +378,7 @@ def ventana_consultar_empresa():
     root.withdraw()
     consultar_win = tk.Toplevel()
     consultar_win.geometry('800x400')
+    consultar_win.minsize(800,400)
     consultar_win.title('Gestor de proyectos')
     consultar_win.config(bg="#eaf2f8")
 
@@ -381,7 +386,7 @@ def ventana_consultar_empresa():
         CIF = CIF_entry.get()
 
         if CIF == '':
-            tk.messagebox.showinfo('ALERT', 'Por favor introduzca el CIF para buscar la empresa')
+            tk.messagebox.showerror('ALERT', 'Por favor introduzca el CIF para buscar la empresa')
         else:
             try:
                 con = mysql.connect(
@@ -431,11 +436,11 @@ def ventana_consultar_empresa():
     CIF_entry = tk.Entry(form_frame, **entry_style)
     CIF_entry.grid(row=0, column=1)
 
-    # Resultado
-    resultado_label = tk.Label(consultar_win, font=("Helvetica", 12), bg="#d6eaf8", fg="#2e4053", width=70, height=6, anchor="w", justify="left", bd=2, relief="solid")
+    
+    resultado_label = tk.Label(consultar_win, font=("Helvetica", 12), bg="#d6eaf8", fg="#2e4053", width=70, height=8, anchor="w", justify="left", bd=2, relief="solid")
     resultado_label.pack(pady=20)
 
-    # Botones
+    
     btn_style = {
         "font": ("Helvetica", 12, "bold"),
         "width": 15,
@@ -458,6 +463,7 @@ def ventana_consultar_empresa():
 root = tk.Tk()
 root.title("Gestión de Empresas")
 root.geometry("700x700+0+0")
+root.minsize(600,700)
 root.config(bg="#eaf2f8")
 
 logo = tk.PhotoImage(file="C:/Users/Ari/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
