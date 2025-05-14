@@ -190,10 +190,11 @@ def ventana_eliminar_empresa():
     eliminar_win.mainloop()
 
 def ventana_actualizar_empresa():
-
-    root = tk.Tk()
-    root.geometry('800x400')
-    root.title('Gestor de proyectos')
+    root.withdraw()
+    actualizar_win = tk.Toplevel()
+    actualizar_win.geometry('800x500')
+    actualizar_win.title('Gestor de proyectos')
+    actualizar_win.config(bg="#eaf2f8")
 
     def update():
         CIF = CIF_entry.get()
@@ -257,39 +258,70 @@ def ventana_actualizar_empresa():
             except Exception as e:
                 tk.messagebox.showinfo('Error',str(e))
 
-    tk.Label(root, text='Introduzca CIF: ', font=('verdana', 13)).place(x=50, y=30)
-    CIF_entry = tk.Entry(root, font=('verdana', 13))
-    CIF_entry.place(x=220, y=30)
+    def cerrar_e_ir_menu():
+        actualizar_win.destroy()
+        root.deiconify()
 
-    tk.Label(root, text='Nombre empresa: ', font=('verdana', 13)).place(x=50, y=80)
-    nombre_empresa_entry = tk.Entry(root, font=('verdana', 13))
-    nombre_empresa_entry.place(x=220, y=80)
+    
+    titulo = tk.Label(actualizar_win, text="Actualizar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
+    titulo.pack(pady=20)
 
-    tk.Label(root, text='Tipo de sociedad: ', font=('verdana', 13)).place(x=50, y=130)
-    tipo_sociedad_entry = tk.Entry(root, font=('verdana', 13))
-    tipo_sociedad_entry.place(x=220, y=130)
+    
+    form_frame = tk.Frame(actualizar_win, bg="#eaf2f8")
+    form_frame.pack(pady=10)
 
-    tk.Label(root, text='Sector: ', font=('verdana', 13)).place(x=50, y=180)
-    Sector_entry = tk.Entry(root, font=('verdana', 13))
-    Sector_entry.place(x=220, y=180)
+    label_style = {"font": ("Helvetica", 12), "bg": "#eaf2f8", "fg": "#2e4053"}
+    entry_style = {"font": ("Helvetica", 12), "width": 30}
 
-    tk.Label(root, text='Localidad: ', font=('verdana', 13)).place(x=50, y=230)
-    Localidad_entry = tk.Entry(root, font=('verdana', 13))
-    Localidad_entry.place(x=220, y=230)
+    tk.Label(form_frame, text="CIF:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
+    CIF_entry = tk.Entry(form_frame, **entry_style)
+    CIF_entry.grid(row=0, column=1)
 
-    tk.Label(root, text='Teléfono empresa: ', font=('verdana', 13)).place(x=50, y=280)
-    telefono_empresa_entry = tk.Entry(root, font=('verdana', 13))
-    telefono_empresa_entry.place(x=220, y=280)
+    tk.Label(form_frame, text="Nombre empresa:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
+    nombre_empresa_entry = tk.Entry(form_frame, **entry_style)
+    nombre_empresa_entry.grid(row=1, column=1)
 
-    tk.Button(root, text='Update', command=update, font=('verdana', 13)).place(x=100, y=320)
+    tk.Label(form_frame, text="Tipo de sociedad:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
+    tipo_sociedad_entry = tk.Entry(form_frame, **entry_style)
+    tipo_sociedad_entry.grid(row=2, column=1)
 
-    root.mainloop()
+    tk.Label(form_frame, text="Sector:", **label_style).grid(row=3, column=0, sticky="e", padx=10, pady=10)
+    Sector_entry = tk.Entry(form_frame, **entry_style)
+    Sector_entry.grid(row=3, column=1)
+
+    tk.Label(form_frame, text="Localidad:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
+    Localidad_entry = tk.Entry(form_frame, **entry_style)
+    Localidad_entry.grid(row=4, column=1)
+
+    tk.Label(form_frame, text="Teléfono empresa:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
+    telefono_empresa_entry = tk.Entry(form_frame, **entry_style)
+    telefono_empresa_entry.grid(row=5, column=1)
+
+    btn_style = {
+        "font": ("Helvetica", 12, "bold"),
+        "width": 15,
+        "height": 1,
+        "bg": "#3498db",
+        "fg": "white",
+        "bd": 0,
+        "activebackground": "#2980b9",
+        "cursor": "hand2"
+    }
+
+    button_frame = tk.Frame(actualizar_win, bg="#eaf2f8")
+    button_frame.pack(pady=20)
+
+    tk.Button(button_frame, text="Actualizar", command=update, **btn_style).grid(row=0, column=0, padx=10)
+    tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+
+    actualizar_win.mainloop()
 
 def ventana_consultar_empresa():
-
-    root = tk.Tk()
-    root.geometry('800x400')
-    root.title('Gestor de proyectos')
+    root.withdraw()
+    consultar_win = tk.Toplevel()
+    consultar_win.geometry('800x400')
+    consultar_win.title('Gestor de proyectos')
+    consultar_win.config(bg="#eaf2f8")
 
     def select():
         CIF = CIF_entry.get()
@@ -314,9 +346,9 @@ def ventana_consultar_empresa():
                     # Crear instancia de Empresa
                     nombre, tipo, sector, localidad, telefono = resultado
                     empresa = Empresa(CIF, nombre, tipo, sector, localidad, telefono)
-                    resultado_label=tk.Label(root)
+                    
                     resultado_label.config(text=str(empresa), justify="left")
-                    resultado_label.pack()
+                    
                 else:
                     resultado_label.config(text="No se encontró ninguna empresa con ese CIF.")
 
@@ -326,22 +358,59 @@ def ventana_consultar_empresa():
             except Exception as e:
                 tk.messagebox.showinfo('Error',str(e))
 
-    tk.Label(root, text='Introduzca CIF: ', font=('verdana', 13)).place(x=50, y=30)
-    CIF_entry = tk.Entry(root, font=('verdana', 13))
-    CIF_entry.place(x=220, y=30)
+    def cerrar_e_ir_menu():
+        consultar_win.destroy()
+        root.deiconify()
 
-    tk.Button(root, text='Buscar', command=select, font=('verdana', 13)).place(x=100, y=320)
+    
+    titulo = tk.Label(consultar_win, text="Consultar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
+    titulo.pack(pady=20)
 
-    root.mainloop()
+    
+    form_frame = tk.Frame(consultar_win, bg="#eaf2f8")
+    form_frame.pack(pady=10)
 
+    label_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#2e4053"}
+    entry_style = {"font": ("Helvetica", 12), "width": 30}
+
+    tk.Label(form_frame, text="CIF:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
+    CIF_entry = tk.Entry(form_frame, **entry_style)
+    CIF_entry.grid(row=0, column=1)
+
+    # Resultado
+    resultado_label = tk.Label(consultar_win, font=("Helvetica", 12), bg="#d6eaf8", fg="#2e4053", width=70, height=6, anchor="w", justify="left", bd=2, relief="solid")
+    resultado_label.pack(pady=20)
+
+    # Botones
+    btn_style = {
+        "font": ("Helvetica", 12, "bold"),
+        "width": 15,
+        "height": 1,
+        "bg": "#3498db",
+        "fg": "white",
+        "bd": 0,
+        "activebackground": "#2980b9",
+        "cursor": "hand2"
+    }
+
+    button_frame = tk.Frame(consultar_win, bg="#eaf2f8")
+    button_frame.pack(pady=10)
+
+    tk.Button(button_frame, text="Buscar", command=select, **btn_style).grid(row=0, column=0, padx=10)
+    tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+
+    consultar_win.mainloop()
 
 root = tk.Tk()
 root.title("Gestión de Empresas")
-root.geometry("600x600")
+root.geometry("700x700+0+0")
 root.config(bg="#eaf2f8")
 
-titulo = tk.Label(root, text="Gestor de Empresas", font=("Helvetica", 24, "bold"), bg="#eaf2f8", fg="#2e4053")
-titulo.pack(pady=40)
+logo = tk.PhotoImage(file="C:/Users/Ari/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
+
+
+titulo = tk.Label(root, image=logo)
+titulo.pack(pady=20)
 
 
 boton_frame = tk.Frame(root, bg="#eaf2f8")
