@@ -131,7 +131,7 @@ def update_proyecto():
 
 def seleccionar_proyectos_por_empresa():
     print("Introduce el CIF de la empresa para ver sus proyectos:")
-    CIF = input("CIF: ").strip()
+    CIF = input("CIF: ").strip() #Hace que aunque el usuasrio introduzca espacios estos no afecten a como lee los datos introducidos
 
     if CIF == "":
         print("Error: El CIF no puede estar vacío.")
@@ -174,7 +174,7 @@ def seleccionar_proyectos_por_empresa():
         FROM Proyecto
         WHERE CIF = %s
     """, (CIF,))
-    proyectos = cursor.fetchall()
+    proyectos = cursor.fetchall() #Coge una tupla entera y la mete en una varialbe y la desempaqueta
 
     if proyectos:
         print("\n Proyectos Asociados:")
@@ -193,35 +193,6 @@ def seleccionar_proyectos_por_empresa():
     con.close()
 
    
-# def seleccionar_proyecto():
-#     print("Introduce los valores que quieres seleccionar de la base de datos y leerlos")
-#     CIF = input("CIF: ").strip() #Hace que aunque el usuasrio introduzca espacios estos no afecten a como lee los datos introducidos
-#     #ID_proyecto = input("Introduce el ID del proyecto que quieres modifdicar o actualizar: ")
-
-    
-#     if CIF == "":
-#         print("Error. No se puede encontrar ese proyecto")
-#     else:
-#         con = mysql.connect(
-#             host='localhost',
-#             user='root',
-#             password='josegras',
-#             database='gestionProyectos'
-#         )
-#         cursor = con.cursor()
-#         cursor.execute("SELECT ID_proyecto, CIF, Facturable, Fecha_Inicio, Fecha_Final, Nombre_proyecto, Estado, Jefe_proyecto FROM Proyecto Where CIF =%s", (CIF,))
-#         resultado = cursor.fetchone() #Coge una tupla entera y la mete en una varialbe y la desempaqueta
-#         con.close()
-        
-#         if resultado:
-#             #Crear isntancia de Proyecto
-#             ID_proyecto, CIF, Facturable, Fecha_Inicio, Fecha_Final, Nombre_proyecto, Estado, Jefe_proyecto = resultado
-#             proyecto = Proyecto(ID_proyecto, CIF, Facturable, Fecha_Inicio, Fecha_Final, Nombre_proyecto, Estado, Jefe_proyecto)
-#             print(proyecto)
-#         else:
-#             print("No se encontro ninguna")
-            
-#         con.close()
     
 # insertar_datos()
 
