@@ -7,11 +7,15 @@ from clases import *
 ###################################################
 # ~~~~~~~~~~~~~~~~~~~EMPRESAS~~~~~~~~~~~~~~~~~~~~ #
 ###################################################
+
+#Importar los posibles valores de tipos de sociedad y sectores
 tipos_sociedad = Empresa.tipos_sociedad
 sectores = Empresa.sectores
 
-
+#ventana ocupada de la accion de rellenar los datos de inserccion de empresa y de ejecutar la funcion insert
 def ventana_inserccion_empresa():
+
+
     root.withdraw()
     insertar_win = tk.Toplevel()
     insertar_win.geometry('800x500')
@@ -20,12 +24,12 @@ def ventana_inserccion_empresa():
     insertar_win.config(bg="#eaf2f8")
 
     def insert():
-        CIF = CIF_entry.get()
-        nombre_empresa = nombre_empresa_entry.get()
-        tipo_sociedad = tipo_sociedad_combo.get()
+        CIF = CIF_entry.get().strip()
+        nombre_empresa = nombre_empresa_entry.get().strip()
+        tipo_sociedad = tipo_sociedad_combo.get().strip()
         Sector = Sector_combo.get()
         Localidad = Localidad_entry.get()
-        telefono_empresa = telefono_empresa_entry.get()
+        telefono_empresa = telefono_empresa_entry.get().strip()
 
         if CIF == '' or nombre_empresa == '' or telefono_empresa == '' or tipo_sociedad=='' or Sector=='' or Localidad== '':
             tk.messagebox.showerror('ALERT', 'Por favor introduzca todos los datos')
@@ -112,6 +116,7 @@ def ventana_inserccion_empresa():
     tk.Button(button_frame, text="Insertar", command=insert, **btn_style).grid(row=0, column=0, padx=10)
     tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
 
+#ventana ocupada de la accion de rellenar el cif y eliminarlo con la funcion delete
 def ventana_eliminar_empresa():
 
     root.withdraw()
@@ -122,7 +127,7 @@ def ventana_eliminar_empresa():
     eliminar_win.config(bg="#eaf2f8")
 
     def delet():
-        CIF = CIF_entry.get()
+        CIF = CIF_entry.get().strip()
 
         if CIF == '':
             tk.messagebox.showerror('Error', 'Por favor introduzca el CIF para eliminar la empresa')
@@ -181,6 +186,7 @@ def ventana_eliminar_empresa():
 
     eliminar_win.mainloop()
 
+#Ventana para introducir el cif y si encuentra la empresa abre otra ventana para introducir los datos a actualizar
 def ventana_actualizar_empresa():
     root.withdraw()
     actualizar_win = tk.Toplevel()
@@ -190,7 +196,7 @@ def ventana_actualizar_empresa():
     actualizar_win.config(bg="#eaf2f8")
 
     def buscar():
-        CIF = CIF_entry.get()
+        CIF = CIF_entry.get().strip()
         
         if CIF == '':
             tk.messagebox.showerror('Error', 'Por favor introduzca el CIF para poder actualizar los datos')
@@ -235,11 +241,11 @@ def ventana_actualizar_empresa():
             actualizar_win.deiconify()
         def update(CIF_buscado):
 
-            nombre_empresa = nombre_empresa_entry.get()
+            nombre_empresa = nombre_empresa_entry.get().strip()
             tipo_sociedad = tipo_sociedad_combo.get()
             Sector = Sector_combo.get()
-            Localidad = Localidad_entry.get()
-            telefono_empresa = telefono_empresa_entry.get()
+            Localidad = Localidad_entry.get().strip()
+            telefono_empresa = telefono_empresa_entry.get().strip()
 
             
             try:
@@ -340,6 +346,7 @@ def ventana_actualizar_empresa():
 
         tk.Button(button_frame, text="Actualizar", command=lambda:update(CIF_buscado), **btn_style).grid(row=0, column=0, padx=10)
         tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+    
 
     titulo = tk.Label(actualizar_win, text="Actualizar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
     titulo.pack(pady=20)
@@ -374,6 +381,7 @@ def ventana_actualizar_empresa():
 
     actualizar_win.mainloop()
 
+#Ventana para introducir el cif y si encuentra la empresa imprime sus datos
 def ventana_consultar_empresa():
     root.withdraw()
     consultar_win = tk.Toplevel()
@@ -383,7 +391,7 @@ def ventana_consultar_empresa():
     consultar_win.config(bg="#eaf2f8")
 
     def select():
-        CIF = CIF_entry.get()
+        CIF = CIF_entry.get().strip()
 
         if CIF == '':
             tk.messagebox.showerror('ALERT', 'Por favor introduzca el CIF para buscar la empresa')
@@ -407,6 +415,7 @@ def ventana_consultar_empresa():
                     empresa = Empresa(CIF, nombre, tipo, sector, localidad, telefono)
                     
                     resultado_label.config(text=str(empresa), justify="left")
+                    tk.Button(form_frame, text="Ver proyectos", **btn_style ).grid(row=2, column=3, sticky="nw", padx=(5, 10), pady=(70, 10))
                     
                 else:
                     resultado_label.config(text="No se encontró ninguna empresa con ese CIF.")
@@ -421,24 +430,31 @@ def ventana_consultar_empresa():
         consultar_win.destroy()
         root.deiconify()
 
-    
-    titulo = tk.Label(consultar_win, text="Consultar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
-    titulo.pack(pady=20)
+
 
     
     form_frame = tk.Frame(consultar_win, bg="#eaf2f8")
     form_frame.pack(pady=10)
+    form_frame.grid_columnconfigure(0, weight=1)  # espacio izquierda
+    form_frame.grid_columnconfigure(1, weight=0)  # label CIF
+    form_frame.grid_columnconfigure(2, weight=0)  # entrada CIF
+    form_frame.grid_columnconfigure(3, weight=1)  # espacio derecha
 
     label_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#2e4053"}
     entry_style = {"font": ("Helvetica", 12), "width": 30}
 
-    tk.Label(form_frame, text="CIF:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
-    CIF_entry = tk.Entry(form_frame, **entry_style)
-    CIF_entry.grid(row=0, column=1)
+    titulo = tk.Label(form_frame, text="Consultar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
+    titulo.grid(row=0, column=0, columnspan=4, pady=(10, 20))
 
-    
-    resultado_label = tk.Label(consultar_win, font=("Helvetica", 12), bg="#d6eaf8", fg="#2e4053", width=70, height=8, anchor="w", justify="left", bd=2, relief="solid")
-    resultado_label.pack(pady=20)
+    # CIF label y entrada
+    tk.Label(form_frame, text="CIF:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
+    CIF_entry = tk.Entry(form_frame, **entry_style)
+    CIF_entry.grid(row=1, column=1, sticky="w", padx=10, pady=10)
+
+    # Resultado label alineado con el formulario
+    resultado_label = tk.Label(form_frame, font=("Helvetica", 12, 'bold'), bg="#d6eaf8", fg="#2e4053",width=40, height=8, anchor="w", justify="left", bd=2, relief="solid")
+    resultado_label.grid(row=2, column=0,columnspan=2, sticky="w", padx=10, pady=(10, 10))
+
 
     
     btn_style = {
@@ -455,10 +471,14 @@ def ventana_consultar_empresa():
     button_frame = tk.Frame(consultar_win, bg="#eaf2f8")
     button_frame.pack(pady=10)
 
+    #tk.Button(form_frame, text="Ver proyectos", **btn_style ).grid(row=2, column=3, sticky="nw", padx=(5, 10), pady=(70, 10))
+
     tk.Button(button_frame, text="Buscar", command=select, **btn_style).grid(row=0, column=0, padx=10)
     tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
 
     consultar_win.mainloop()
+
+
 
 root = tk.Tk()
 root.title("Gestión de Empresas")
