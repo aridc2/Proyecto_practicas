@@ -1,8 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from tkcalendar import Dataentry
+#from tkcalendar import DateEntry
 import mysql.connector as mysql
 from clases import *
+
+
+# # # Para el lunes: Cambiar la forma de inserción de las fechas usando la biblioteca tkcalendar y acabar el CRUD de proyecto
+
 
 
 ###################################################
@@ -10,8 +14,14 @@ from clases import *
 ###################################################
 
 #Importar los posibles valores de tipos de sociedad y sectores
-tipos_sociedad = Empresa.tipos_sociedad
-sectores = Empresa.sectores
+tipos_sociedad = Empresa.v_tipos_sociedad
+sectores = Empresa.v_sectores
+
+#Importar los posibles valores de tipos de Estado y Facturabilidad
+estado = Proyecto.v_estado
+facturable = Proyecto.v_facturable
+
+
 
 def cerrar_ventana(ventana_cerrar,ventana_abrir):
     ventana_cerrar.destroy()
@@ -411,9 +421,6 @@ def ventana_consultar_empresa():
                 else:
                     resultado_label.config(text="No se encontró ninguna empresa con ese CIF.")
 
-
-
-
             except Exception as e:
                 tk.messagebox.showinfo('Error',str(e))
 
@@ -550,7 +557,6 @@ def ventana_consultar_empresa():
             tk.messagebox.showinfo("Status", "Proyecto borrado correctamente")
             con.close()
 
-
         def mostrar_detalles(event):
             seleccion = lista_proyectos.curselection()
             if seleccion:
@@ -564,6 +570,116 @@ def ventana_consultar_empresa():
                 index = seleccion[0]
                 proyecto = lista_proyectos.proyectos_data[index]
                 eliminar_proyecto(proyecto)
+
+        ####
+        # # Ventana para insertar un nuevo proyecto a la empresa
+        def ventana_insertar_proyecto(CIF):
+            listado_proyectos_empresa_win.withdraw()
+            insertar_proyecto_win=tk.Toplevel()
+            insertar_proyecto_win.geometry('800x500')
+            insertar_proyecto_win.minsize(600,500)
+            insertar_proyecto_win.title('Gestor de Proyectos')
+            insertar_proyecto_win.config(bg="#eaf2f8")
+            
+            def insertar_proyecto(CIF):
+                ID_proyecto = ID_proyecto_entry.get()
+                nombre_proyecto = nombre_proyecto_entry.get()
+                estado = estado_combo.get()
+                facturable = facturable_combo.get()
+                jefe_proyecto = jefe_proyecto_entry.get()
+                fecha_Inicio = fecha_Inicio_entry.get()
+                fecha_Final = fecha_Final_entry.get()
+
+                if ID_proyecto == '' or nombre_proyecto == '' or estado == '' or facturable == '' or jefe_proyecto == '' or fecha_Inicio == '' or fecha_Final == '':
+                    tk.messagebox.showerror('ALERT, Por favor introduzca todos los valores para insertar un nuevo proyecto')
+                else:
+                    try:
+                        con = mysql.connect(
+                            host='localhost',
+                            user='root',
+                            password='josegras',
+                            database='gestionProyectos'
+                        )
+                        cursor = con.cursor()
+                        sql = "INSERT INTO Proyecto (CIF, ID_proyecto, Nombre_proyecto, Estado, Facturable, Jefe_proyecto, Fecha_Inicio, Fecha_Final) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                        valores = (CIF,ID_proyecto, nombre_proyecto, estado, facturable, jefe_proyecto, fecha_Inicio, fecha_Final)
+                        cursor.execute(sql, valores)
+                        con.commit()
+                        tk.messagebox.showinfo("Status", "Proyecto insertado correctamente.")
+                        
+                        ID_proyecto_entry.delete(0, 'end')
+                        nombre_proyecto_entry.delete(0, 'end')
+                        estado_combo.delete(0, 'end')
+                        facturable_combo.delete(0, 'end')
+                        jefe_proyecto_entry.delete(0, 'end')
+                        fecha_Inicio_entry.delete(0, 'end')
+                        fecha_Final_entry.delete(0, 'end')
+                        
+                        con.close()
+                        
+                    except Exception as e: #Guarda el error y lo imprime en una ventana emergente
+                        tk.messagebox.showerror('Error',str(e))
+                    
+
+            titulo = tk.Label(insertar_proyecto_win, text="Insertar Proyecto", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
+            titulo.pack(pady=20)
+
+            form_frame = tk.Frame(insertar_proyecto_win, bg="#eaf2f8")
+            form_frame.pack(pady=10)
+
+            
+            label_style = {"font": ("Helvetica", 12), "bg": "#eaf2f8", "fg": "#2e4053"}
+            entry_style = {"font": ("Helvetica", 12), "width": 30}
+
+            
+            tk.Label(form_frame, text="ID Proyecto:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
+            ID_proyecto_entry = tk.Entry(form_frame, **entry_style)
+            ID_proyecto_entry.grid(row=0, column=1)
+
+            tk.Label(form_frame, text="Nombre:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
+            nombre_proyecto_entry = tk.Entry(form_frame, **entry_style)
+            nombre_proyecto_entry.grid(row=1, column=1)
+
+            tk.Label(form_frame, text="Estado:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
+            estado_combo = ttk.Combobox(form_frame, values=estado, font=("Helvetica", 12), state="readonly", width=28)
+            estado_combo.grid(row=2, column=1)
+
+            tk.Label(form_frame, text="Facturable:", **label_style).grid(row=3, column=0, sticky="e", padx=10, pady=10)
+            facturable_combo = ttk.Combobox(form_frame, values=facturable, font=("Helvetica", 12), state="readonly", width=28)
+            facturable_combo.grid(row=3, column=1)
+
+            tk.Label(form_frame, text="Jefe Proyecto:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
+            jefe_proyecto_entry = tk.Entry(form_frame, **entry_style)
+            jefe_proyecto_entry.grid(row=4, column=1)
+
+            tk.Label(form_frame, text="Fecha Inicio:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
+            # fecha_Inicio_entry = ttk.DataEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
+            fecha_Inicio_entry = tk.Entry(form_frame, **entry_style)
+            fecha_Inicio_entry.grid(row=5, column=1)
+            
+            tk.Label(form_frame, text="Fecha Finlaización:", **label_style).grid(row=6, column=0, sticky="e", padx=10, pady=10)
+            # fecha_Final_entry = tk.DataEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
+            fecha_Final_entry = tk.Entry(form_frame, **entry_style)
+            fecha_Final_entry.grid(row=6, column=1)
+
+            
+            btn_style = {
+                "font": ("Helvetica", 12, "bold"),
+                "width": 15,
+                "height": 1,
+                "bg": "#3498db",
+                "fg": "white",
+                "bd": 0,
+                "activebackground": "#2980b9",
+                "cursor": "hand2"
+            }
+
+            button_frame = tk.Frame(insertar_proyecto_win, bg="#eaf2f8")
+            button_frame.pack(pady=20)
+
+            tk.Button(button_frame, text="Insertar", command=lambda:insertar_proyecto(CIF), **btn_style).grid(row=0, column=0, padx=10)
+            tk.Button(button_frame, text="Volver", command=lambda:cerrar_ventana(insertar_proyecto_win,listado_proyectos_empresa_win), **btn_style).grid(row=0, column=1, padx=10)
+
 
         tk.Label(listado_proyectos_empresa_win, text="Listado de Proyectos", font=("Helvetica", 18, "bold"), bg="#eaf2f8", fg="#2e4053").pack(pady=20)
 
@@ -587,7 +703,7 @@ def ventana_consultar_empresa():
         boton_frame = tk.Frame(listado_proyectos_empresa_win, bg="#eaf2f8")
         boton_frame.pack(pady=20)
 
-        tk.Button(boton_frame, text="Insertar", **btn_style).grid(row=0, column=0, padx=10)
+        tk.Button(boton_frame, text="Insertar",command=lambda: ventana_insertar_proyecto(CIF), **btn_style).grid(row=0, column=0, padx=10)
         tk.Button(boton_frame, text="Eliminar",command=seleccion_eliminar_proyecto, **btn_style).grid(row=0, column=1, padx=10)
         tk.Button(boton_frame, text="Volver",command=lambda: cerrar_ventana(listado_proyectos_empresa_win,consultar_win), **btn_style).grid(row=0, column=2, padx=10)
 
