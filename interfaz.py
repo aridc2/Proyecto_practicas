@@ -424,6 +424,17 @@ def ventana_consultar_empresa():
         listado_proyectos_empresa_win.title('Gestor de proyectos')
         listado_proyectos_empresa_win.config(bg="#eaf2f8")
 
+        btn_style = {
+            "font": ("Helvetica", 12, "bold"),
+            "width": 15,
+            "height": 1,
+            "bg": "#3498db",
+            "fg": "white",
+            "bd": 0,
+            "activebackground": "#2980b9",
+            "cursor": "hand2"
+        }
+
         def seleccionar_proyectos_por_empresa(CIF):
 
 
@@ -450,35 +461,54 @@ def ventana_consultar_empresa():
 
         
         def mostrar_detalles_ventana(proyecto):
+        
             listado_proyectos_empresa_win.withdraw()
             detalle_win = tk.Toplevel()
             detalle_win.title("Detalles del Proyecto")
-            detalle_win.geometry("500x300")
+            detalle_win.geometry("500x400")
             detalle_win.config(bg="#eaf2f8")
 
-            label_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#2e4053"}
-            value_style = {"font": ("Helvetica", 12), "bg": "#eaf2f8", "fg": "#2e4053"}
+            frame_contenido = tk.Frame(detalle_win, bg="#eaf2f8")
+            frame_contenido.pack(padx=20, pady=20, fill="both", expand=True)
 
-            tk.Label(detalle_win, text="ID Proyecto:", **label_style).pack(anchor="w", padx=20, pady=(20, 0))
-            tk.Label(detalle_win, text=proyecto[0], **value_style).pack(anchor="w", padx=40)
-            
-            tk.Label(detalle_win, text="Nombre:", **label_style).pack(anchor="w", padx=20, pady=(10, 0))
-            tk.Label(detalle_win, text=proyecto[4], **value_style).pack(anchor="w", padx=40)
+            label_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#416286"}
+            value_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#2e4053"}
 
-            tk.Label(detalle_win, text="Fecha de Inicio:", **label_style).pack(anchor="w", padx=20, pady=(10, 0))
-            tk.Label(detalle_win, text=proyecto[2], **value_style).pack(anchor="w", padx=40)
+            # Etiquetas y valores usando grid dentro del frame
+            tk.Label(frame_contenido, text="ID Proyecto:", **label_style).grid(row=0, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[0], **value_style).grid(row=0, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(detalle_win, text="Fecha de Finalización:", **label_style).pack(anchor="w", padx=20, pady=(10, 0))
-            tk.Label(detalle_win, text=proyecto[3], **value_style, wraplength=400, justify="left").pack(anchor="w", padx=40)
+            tk.Label(frame_contenido, text="Nombre:", **label_style).grid(row=1, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[4], **value_style).grid(row=1, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(detalle_win, text="Estado:", **label_style).pack(anchor="w", padx=20, pady=(10, 0))
-            tk.Label(detalle_win, text=proyecto[5], **value_style).pack(anchor="w", padx=40)
-            
-            tk.Label(detalle_win, text="Facturable:", **label_style).pack(anchor="w", padx=20, pady=(10, 0))
-            tk.Label(detalle_win, text=proyecto[1], **value_style).pack(anchor="w", padx=40)
-            
-            tk.Label(detalle_win, text="Jefe de proyecto:", **label_style).pack(anchor="w", padx=20, pady=(10, 0))
-            tk.Label(detalle_win, text=proyecto[6], **value_style).pack(anchor="w", padx=40)
+            tk.Label(frame_contenido, text="Fecha de Inicio:", **label_style).grid(row=2, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[2], **value_style).grid(row=2, column=1, sticky="w", pady=(0, 10))
+
+            tk.Label(frame_contenido, text="Fecha de Finalización:", **label_style).grid(row=3, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[3], **value_style, wraplength=300, justify="left").grid(row=3, column=1, sticky="w", pady=(0, 10))
+
+            tk.Label(frame_contenido, text="Estado:", **label_style).grid(row=4, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[5], **value_style).grid(row=4, column=1, sticky="w", pady=(0, 10))
+
+            tk.Label(frame_contenido, text="Facturable:", **label_style).grid(row=5, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[1], **value_style).grid(row=5, column=1, sticky="w", pady=(0, 10))
+
+            tk.Label(frame_contenido, text="Jefe de proyecto:", **label_style).grid(row=6, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto[6], **value_style).grid(row=6, column=1, sticky="w", pady=(0, 10))
+
+            btn_style = {
+                "font": ("Helvetica", 12, "bold"),
+                "width": 15,
+                "height": 1,
+                "bg": "#3498db",
+                "fg": "white",
+                "bd": 0,
+                "activebackground": "#2980b9",
+                "cursor": "hand2"
+            }
+
+        
+            tk.Button(frame_contenido, text="Volver", command=lambda: cerrar_ventana(detalle_win, listado_proyectos_empresa_win), **btn_style).grid(row=7, column=0, columnspan=2, pady=20)
 
 
         def mostrar_detalles(event):
@@ -503,16 +533,6 @@ def ventana_consultar_empresa():
 
         lista_proyectos.bind("<Double-Button-1>", mostrar_detalles)
 
-        btn_style = {
-            "font": ("Helvetica", 12, "bold"),
-            "width": 15,
-            "height": 1,
-            "bg": "#3498db",
-            "fg": "white",
-            "bd": 0,
-            "activebackground": "#2980b9",
-            "cursor": "hand2"
-        }
 
         boton_frame = tk.Frame(listado_proyectos_empresa_win, bg="#eaf2f8")
         boton_frame.pack(pady=20)
