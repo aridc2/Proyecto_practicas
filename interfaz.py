@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
+from tkcalendar import Dataentry
 import mysql.connector as mysql
 from clases import *
 
@@ -446,15 +447,32 @@ def ventana_consultar_empresa():
                 database='gestionProyectos'
             )
             cursor = con.cursor()
-
+            #Buscar nombre empresa
+            cursor.execute("SELECT Nombre FROM Empresa WHERE CIF = %s", (CIF,))
+            Nombre_empresa_tupla = cursor.fetchone()
+            Nombre_empresa=Nombre_empresa_tupla[0]
             # Buscar proyectos asociados a esa empresa
             cursor.execute("""
-                SELECT ID_proyecto, Facturable, Fecha_Inicio, Fecha_Final, Nombre_proyecto, Estado, Jefe_proyecto
+                SELECT ID_proyecto, Nombre_proyecto, Estado, Facturable, Jefe_proyecto, Fecha_Inicio, Fecha_Final
                 FROM Proyecto
                 WHERE CIF = %s
             """, (CIF,))
-            proyectos = cursor.fetchall() #Coge una tupla entera y la mete en una varialbe y la desempaqueta
+            proyectos_sin_datos_empresa = cursor.fetchall() #Coge una tupla entera y la mete en una varialbe
 
+            proyectos=[]
+            for p in proyectos_sin_datos_empresa:
+                proyecto = Proyecto(
+                    CIF=CIF,
+                    nombre_empresa=Nombre_empresa,
+                    ID=p[0],
+                    nombre=p[1],
+                    estado=p[2],
+                    facturable=p[3],
+                    jefe_pr=p[4],
+                    fecha_in=p[5],
+                    fecha_fin=p[6]
+                )
+                proyectos.append(proyecto)
             con.close()
             return proyectos
 
@@ -465,7 +483,7 @@ def ventana_consultar_empresa():
             listado_proyectos_empresa_win.withdraw()
             detalle_win = tk.Toplevel()
             detalle_win.title("Detalles del Proyecto")
-            detalle_win.geometry("500x400")
+            detalle_win.geometry("550x400")
             detalle_win.config(bg="#eaf2f8")
 
             frame_contenido = tk.Frame(detalle_win, bg="#eaf2f8")
@@ -475,26 +493,29 @@ def ventana_consultar_empresa():
             value_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#2e4053"}
 
             # Etiquetas y valores usando grid dentro del frame
-            tk.Label(frame_contenido, text="ID Proyecto:", **label_style).grid(row=0, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[0], **value_style).grid(row=0, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="Empresa:", **label_style).grid(row=0, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.nombre_empresa, **value_style).grid(row=0, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(frame_contenido, text="Nombre:", **label_style).grid(row=1, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[4], **value_style).grid(row=1, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="ID Proyecto:", **label_style).grid(row=1, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.ID, **value_style).grid(row=1, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(frame_contenido, text="Fecha de Inicio:", **label_style).grid(row=2, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[2], **value_style).grid(row=2, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="Nombre:", **label_style).grid(row=2, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.nombre, **value_style).grid(row=2, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(frame_contenido, text="Fecha de Finalización:", **label_style).grid(row=3, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[3], **value_style, wraplength=300, justify="left").grid(row=3, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="Fecha de Inicio:", **label_style).grid(row=3, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.fecha_in, **value_style).grid(row=3, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(frame_contenido, text="Estado:", **label_style).grid(row=4, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[5], **value_style).grid(row=4, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="Fecha de Finalización:", **label_style).grid(row=4, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.fecha_fin, **value_style, wraplength=300, justify="left").grid(row=4, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(frame_contenido, text="Facturable:", **label_style).grid(row=5, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[1], **value_style).grid(row=5, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="Estado:", **label_style).grid(row=5, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.estado, **value_style).grid(row=5, column=1, sticky="w", pady=(0, 10))
 
-            tk.Label(frame_contenido, text="Jefe de proyecto:", **label_style).grid(row=6, column=0, sticky="w", pady=(0, 10))
-            tk.Label(frame_contenido, text=proyecto[6], **value_style).grid(row=6, column=1, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text="Facturable:", **label_style).grid(row=6, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.facturable, **value_style).grid(row=6, column=1, sticky="w", pady=(0, 10))
+
+            tk.Label(frame_contenido, text="Jefe de proyecto:", **label_style).grid(row=7, column=0, sticky="w", pady=(0, 10))
+            tk.Label(frame_contenido, text=proyecto.jefe_pr, **value_style).grid(row=7, column=1, sticky="w", pady=(0, 10))
 
             btn_style = {
                 "font": ("Helvetica", 12, "bold"),
@@ -508,7 +529,26 @@ def ventana_consultar_empresa():
             }
 
         
-            tk.Button(frame_contenido, text="Volver", command=lambda: cerrar_ventana(detalle_win, listado_proyectos_empresa_win), **btn_style).grid(row=7, column=0, columnspan=2, pady=20)
+            tk.Button(frame_contenido, text="Volver", command=lambda: cerrar_ventana(detalle_win, listado_proyectos_empresa_win), **btn_style).grid(row=8, column=0, columnspan=2, pady=20)
+
+        def eliminar_proyecto(proyecto):
+            CIF = proyecto.CIF
+            ID_proyecto = proyecto.ID
+            
+            con = mysql.connect(
+                host='localhost',
+                user='root',
+                password='josegras',
+                database='gestionProyectos'
+            )
+            cursor = con.cursor()
+
+                # Borrar el proyecto con ese ID y CIF
+            cursor.execute("DELETE FROM Proyecto WHERE ID_proyecto = %s AND CIF = %s", (ID_proyecto, CIF))
+            con.commit()
+
+            tk.messagebox.showinfo("Status", "Proyecto borrado correctamente")
+            con.close()
 
 
         def mostrar_detalles(event):
@@ -518,6 +558,13 @@ def ventana_consultar_empresa():
                 proyecto = lista_proyectos.proyectos_data[index]
                 mostrar_detalles_ventana(proyecto)
 
+        def seleccion_eliminar_proyecto():
+            seleccion=lista_proyectos.curselection()
+            if seleccion:
+                index = seleccion[0]
+                proyecto = lista_proyectos.proyectos_data[index]
+                eliminar_proyecto(proyecto)
+
         tk.Label(listado_proyectos_empresa_win, text="Listado de Proyectos", font=("Helvetica", 18, "bold"), bg="#eaf2f8", fg="#2e4053").pack(pady=20)
 
 
@@ -526,10 +573,13 @@ def ventana_consultar_empresa():
         lista_proyectos.pack(pady=10)
 
         proyectos = seleccionar_proyectos_por_empresa(CIF)
-        lista_proyectos.proyectos_data = proyectos  # Guardamos los proyectos completos
-
-        for proyecto in proyectos:
-            lista_proyectos.insert(tk.END,f'  {proyecto[4]}')  # Mostramos solo el nombre en la lista
+        if not proyectos:
+            tk.messagebox.showinfo('Status', 'No hay proyectos')
+            lista_proyectos.proyectos_data = []  
+        else:
+            lista_proyectos.proyectos_data = proyectos
+            for proyecto in proyectos:
+                lista_proyectos.insert(tk.END, f'  {proyecto.nombre}')# Mostramos solo el nombre en la lista
 
         lista_proyectos.bind("<Double-Button-1>", mostrar_detalles)
 
@@ -538,7 +588,7 @@ def ventana_consultar_empresa():
         boton_frame.pack(pady=20)
 
         tk.Button(boton_frame, text="Insertar", **btn_style).grid(row=0, column=0, padx=10)
-        tk.Button(boton_frame, text="Eliminar", **btn_style).grid(row=0, column=1, padx=10)
+        tk.Button(boton_frame, text="Eliminar",command=seleccion_eliminar_proyecto, **btn_style).grid(row=0, column=1, padx=10)
         tk.Button(boton_frame, text="Volver",command=lambda: cerrar_ventana(listado_proyectos_empresa_win,consultar_win), **btn_style).grid(row=0, column=2, padx=10)
 
         listado_proyectos_empresa_win.mainloop()
