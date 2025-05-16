@@ -12,6 +12,10 @@ from clases import *
 tipos_sociedad = Empresa.tipos_sociedad
 sectores = Empresa.sectores
 
+def cerrar_ventana(ventana_cerrar,ventana_abrir):
+    ventana_cerrar.destroy()
+    ventana_abrir.deiconify()
+
 #ventana ocupada de la accion de rellenar los datos de inserccion de empresa y de ejecutar la funcion insert
 def ventana_inserccion_empresa():
 
@@ -58,10 +62,6 @@ def ventana_inserccion_empresa():
                 con.close()
             except Exception as e: #Guarda el error y lo imprime en una ventana emergente
                 tk.messagebox.showerror('Error',str(e))
-
-    def cerrar_e_ir_menu():
-        insertar_win.destroy()
-        root.deiconify()
 
     titulo = tk.Label(insertar_win, text="Insertar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
     titulo.pack(pady=20)
@@ -114,7 +114,7 @@ def ventana_inserccion_empresa():
     button_frame.pack(pady=20)
 
     tk.Button(button_frame, text="Insertar", command=insert, **btn_style).grid(row=0, column=0, padx=10)
-    tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+    tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(insertar_win,root), **btn_style).grid(row=0, column=1, padx=10)
 
 #ventana ocupada de la accion de rellenar el cif y eliminarlo con la funcion delete
 def ventana_eliminar_empresa():
@@ -127,6 +127,7 @@ def ventana_eliminar_empresa():
     eliminar_win.config(bg="#eaf2f8")
 
     def delet():
+
         CIF = CIF_entry.get().strip()
 
         if CIF == '':
@@ -149,10 +150,6 @@ def ventana_eliminar_empresa():
                 con.close()
             except Exception as e:
                 tk.messagebox.showerror('Error',str(e))
-
-    def cerrar_e_ir_menu():
-        eliminar_win.destroy()
-        root.deiconify()
 
     titulo = tk.Label(eliminar_win, text="Eliminar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
     titulo.pack(pady=20)
@@ -182,7 +179,7 @@ def ventana_eliminar_empresa():
 
     tk.Button(btn_frame, text="Eliminar", command=delet, **btn_style).grid(row=0, column=0, padx=10)
 
-    tk.Button(btn_frame, text="Volver", command=cerrar_e_ir_menu, bg="#3498db", fg="white", activebackground="#7f8c8d", font=("Helvetica", 12, "bold"), width=15, height=2, bd=0, cursor="hand2").grid(row=0, column=1, padx=10)
+    tk.Button(btn_frame, text="Volver", command=lambda: cerrar_ventana(eliminar_win,root), bg="#3498db", fg="white", activebackground="#7f8c8d", font=("Helvetica", 12, "bold"), width=15, height=2, bd=0, cursor="hand2").grid(row=0, column=1, padx=10)
 
     eliminar_win.mainloop()
 
@@ -223,10 +220,6 @@ def ventana_actualizar_empresa():
             except Exception as e:
                 tk.messagebox.showerror('Error',str(e))
 
-    def cerrar_e_ir_menu():
-        actualizar_win.destroy()
-        root.deiconify()
-
     def ventana_rellenar_campos(CIF):
         CIF_buscado=CIF
         actualizar_win.withdraw()
@@ -236,9 +229,6 @@ def ventana_actualizar_empresa():
         actualizar_campos_win.title('Gestor de proyectos')
         actualizar_campos_win.config(bg="#eaf2f8")
 
-        def cerrar_e_ir_menu():
-            actualizar_campos_win.destroy()
-            actualizar_win.deiconify()
         def update(CIF_buscado):
 
             nombre_empresa = nombre_empresa_entry.get().strip()
@@ -345,7 +335,7 @@ def ventana_actualizar_empresa():
         button_frame.pack(pady=20)
 
         tk.Button(button_frame, text="Actualizar", command=lambda:update(CIF_buscado), **btn_style).grid(row=0, column=0, padx=10)
-        tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+        tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(actualizar_campos_win,actualizar_win), **btn_style).grid(row=0, column=1, padx=10)
     
 
     titulo = tk.Label(actualizar_win, text="Actualizar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
@@ -377,7 +367,7 @@ def ventana_actualizar_empresa():
     button_frame.pack(pady=20)
 
     tk.Button(button_frame, text="Buscar", command=buscar, **btn_style).grid(row=0, column=0, padx=10)
-    tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+    tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(actualizar_win,root), **btn_style).grid(row=0, column=1, padx=10)
 
     actualizar_win.mainloop()
 
@@ -425,10 +415,6 @@ def ventana_consultar_empresa():
 
             except Exception as e:
                 tk.messagebox.showinfo('Error',str(e))
-
-    def cerrar_e_ir_menu():
-        consultar_win.destroy()
-        root.deiconify()
 
     def ventana_gestionar_proyectos(CIF):
         consultar_win.withdraw()
@@ -504,14 +490,16 @@ def ventana_consultar_empresa():
 
         tk.Label(listado_proyectos_empresa_win, text="Listado de Proyectos", font=("Helvetica", 18, "bold"), bg="#eaf2f8", fg="#2e4053").pack(pady=20)
 
-        lista_proyectos = tk.Listbox(listado_proyectos_empresa_win, width=60, height=10, font=("Helvetica", 12), bg="#d6eaf8",fg="#2e4053", bd=2, relief="solid", selectmode="browse")
+
+
+        lista_proyectos = tk.Listbox(listado_proyectos_empresa_win, width=60, height=10, font=("Helvetica", 12, 'bold'), bg="#d6eaf8",fg="#2e4053", bd=2, relief="solid", selectmode="browse")
         lista_proyectos.pack(pady=10)
 
         proyectos = seleccionar_proyectos_por_empresa(CIF)
         lista_proyectos.proyectos_data = proyectos  # Guardamos los proyectos completos
 
         for proyecto in proyectos:
-            lista_proyectos.insert(tk.END, proyecto[4])  # Mostramos solo el nombre en la lista
+            lista_proyectos.insert(tk.END,f'  {proyecto[4]}')  # Mostramos solo el nombre en la lista
 
         lista_proyectos.bind("<Double-Button-1>", mostrar_detalles)
 
@@ -531,6 +519,7 @@ def ventana_consultar_empresa():
 
         tk.Button(boton_frame, text="Insertar", **btn_style).grid(row=0, column=0, padx=10)
         tk.Button(boton_frame, text="Eliminar", **btn_style).grid(row=0, column=1, padx=10)
+        tk.Button(boton_frame, text="Volver",command=lambda: cerrar_ventana(listado_proyectos_empresa_win,consultar_win), **btn_style).grid(row=0, column=2, padx=10)
 
         listado_proyectos_empresa_win.mainloop()
     
@@ -577,7 +566,7 @@ def ventana_consultar_empresa():
     
 
     tk.Button(button_frame, text="Buscar", command=select, **btn_style).grid(row=0, column=0, padx=10)
-    tk.Button(button_frame, text="Volver", command=cerrar_e_ir_menu, **btn_style).grid(row=0, column=1, padx=10)
+    tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(consultar_win,root), **btn_style).grid(row=0, column=1, padx=10)
 
     consultar_win.mainloop()
 
