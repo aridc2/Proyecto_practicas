@@ -398,12 +398,10 @@ def ventana_consultar_empresa():
     consultar_win.title('Gestor de proyectos')
     consultar_win.config(bg="#eaf2f8")
 
-    def select():
-        CIF = CIF_entry.get().strip()
+    def info_empresas():
 
-        if CIF == '':
-            tk.messagebox.showerror('ALERT', 'Por favor introduzca el CIF para buscar la empresa')
-        else:
+        def select(CIF):
+            
             try:
                 con = mysql.connect(
                     host='localhost',
@@ -414,22 +412,48 @@ def ventana_consultar_empresa():
                 cursor = con.cursor()
                 cursor.execute("SELECT Nombre, Tipo_sociedad, Sector, Localidad, N_Telefono FROM Empresa WHERE CIF = %s", (CIF,))
                 resultado = cursor.fetchone()
-                CIF_entry.delete(0, 'end')
                 con.close()
 
                 if resultado:
                     # Crear instancia de Empresa
                     nombre, tipo, sector, localidad, telefono = resultado
                     empresa = Empresa(CIF, nombre, tipo, sector, localidad, telefono)
-                    
+                        
                     resultado_label.config(text=str(empresa), justify="left")
                     tk.Button(form_frame, text="Ver proyectos",command= lambda: ventana_gestionar_proyectos(CIF), **btn_style ).grid(row=2, column=3, sticky="nw", padx=(5, 10), pady=(70, 10))
-                    
+                        
                 else:
                     resultado_label.config(text="No se encontró ninguna empresa con ese CIF.")
 
             except Exception as e:
                 tk.messagebox.showinfo('Error',str(e))
+        
+        nombre_seleccionado = empresa_combo.get()
+        CIF = empresa_dict.get(nombre_seleccionado)
+        select(CIF)
+
+    def extraer_todas_las_Empresas():
+        try:
+            con = mysql.connect(
+                host='localhost',
+                user='root',
+                password='josegras',
+                database='gestionProyectos'
+            )
+            cursor = con.cursor()
+            cursor.execute("SELECT CIF, Nombre FROM Empresa")
+            resultado = cursor.fetchall()
+            
+            con.close()
+            return resultado
+        except Exception as e:
+            tk.messagebox.showinfo('Error',str(e))
+
+    empresas_totales=extraer_todas_las_Empresas()
+
+    empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
+    nombres_empresas=list(empresa_dict.keys())
+
 
     def ventana_gestionar_proyectos(CIF):
         consultar_win.withdraw()
@@ -471,7 +495,7 @@ def ventana_consultar_empresa():
                 FROM Proyecto
                 WHERE CIF = %s
             """, (CIF,))
-            proyectos_sin_datos_empresa = cursor.fetchall() #Coge una tupla entera y la mete en una varialbe
+            proyectos_sin_datos_empresa = cursor.fetchall() 
 
             proyectos=[]
             for p in proyectos_sin_datos_empresa:
@@ -855,17 +879,15 @@ def ventana_consultar_empresa():
     form_frame.grid_columnconfigure(3, weight=1)  # espacio derecha
 
     label_style = {"font": ("Helvetica", 12, "bold"), "bg": "#eaf2f8", "fg": "#2e4053"}
-    entry_style = {"font": ("Helvetica", 12), "width": 30, "bg": "#ffffff",}
+    #entry_style = {"font": ("Helvetica", 12), "width": 30, "bg": "#ffffff",}
 
     titulo = tk.Label(form_frame, text="Consultar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
     titulo.grid(row=0, column=0, columnspan=4, pady=(10, 20))
 
-    # CIF label y entrada
-    tk.Label(form_frame, text="CIF:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
-    CIF_entry = tk.Entry(form_frame, **entry_style)
-    CIF_entry.grid(row=1, column=1, sticky="w", padx=10, pady=10)
-    CIF_entry.bind("<FocusOut>", validacion_CIF)
-    CIF_entry.config(bg="#ffffff")
+    tk.Label(form_frame, text="Empresa:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
+    empresa_combo = ttk.Combobox(form_frame, values=nombres_empresas, font=("Helvetica", 12), state="readonly", width=28)
+    empresa_combo.grid(row=1, column=1, sticky="w", padx=10, pady=10)
+    
 
     # Resultado label alineado con el formulario
     resultado_label = tk.Label(form_frame, font=("Helvetica", 12, 'bold'), bg="#d6eaf8", fg="#2e4053",width=40, height=8, anchor="w", justify="left", bd=2, relief="solid")
@@ -887,9 +909,7 @@ def ventana_consultar_empresa():
     button_frame = tk.Frame(consultar_win, bg="#eaf2f8")
     button_frame.pack(pady=10)
 
-    
-
-    tk.Button(button_frame, text="Buscar", command=select, **btn_style).grid(row=0, column=0, padx=10)
+    tk.Button(button_frame, text="Buscar", command=info_empresas, **btn_style).grid(row=0, column=0, padx=10)
     tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(consultar_win,root), **btn_style).grid(row=0, column=1, padx=10)
 
     consultar_win.mainloop()
