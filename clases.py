@@ -10,40 +10,34 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 class Empresa:
 
-    tipos_sociedad = ["Sociedad Anónima", "Sociedad Limitada", " Sociedad Cooperativa", "Sociedad Comanditaria", "Sociedad Civil", "Sociedad autonoma" , "Sociedad annónima", "Sociedad colecctiva"]
-    sector = ["Agricultura", "Pesca", "Minería", "Silvicultura","Industria alimentaria", "Construcción", "Metalurgia", "Automoción", "Química", "Textil", "Manufactura","Comercio", "Transporte y logística", "Hostelería y turismo", "Educación", "Sanidad", "Servicios financieros","Consuloría", "Tecnología", "Software", "Consultoría especializada", "Startups tecnológicas","ONG", "Asistencia social", "Servicios culturales", "Formación personal"]
+    v_tipos_sociedad = ["Sociedad Anónima", "Sociedad Limitada", "Sociedad Cooperativa", "Sociedad Comanditaria", "Sociedad Civil", "Sociedad autonoma", "Sociedad colecctiva"]
+    v_sectores = ["Agricultura", "Pesca", "Minería", "Silvicultura","Industria alimentaria", "Construcción", "Metalurgia", "Automoción", "Química", "Textil", "Manufactura","Comercio", "Transporte y logística", "Hostelería y turismo", "Educación", "Sanidad", "Servicios financieros","Consuloría", "Tecnología", "Software", "Consultoría especializada", "Startups tecnológicas","ONG", "Asistencia social", "Servicios culturales", "Formación personal"]
     def __init__(self, CIF, nombre_empresa, tipo_sociedad=None, sector=None, localidad=None, telefono=None):
-        self.__CIF = CIF
+        self._CIF = CIF
         self._nombre_empresa = nombre_empresa
-        # if tipo_sociedad in Empresa.tipos_sociedad:
         self._tipos_sociedad = tipo_sociedad
-        # else:
-        #     raise ValueError(f"Tipo de empresa no válido. Debe ser uno de: {', '.join(Empresa.tipos_sociedad)}")
-        # if sector in Empresa.sector:
         self._sector = sector
-        # else:
-        #     raise ValueError(f"Tipo de sector no valido. Debe ser uni de: {', '.join(Empresa.sector)}")
         self._localidad = localidad
         self._telefono = telefono
         
     # Método para mostrar la información de la empresa
     def __str__(self):
-        return f'Datos de la empresa: \nCIF: {self.__CIF}\nNombre: {self._nombre_empresa}\nTipo de Sociedad: {self._tipos_sociedad}\nSector: {self._sector}\nLocalidad: {self._localidad}\nTelefono {self._telefono}\n'
+        return f'Datos de la empresa: \nCIF: {self._CIF}\nNombre: {self._nombre_empresa}\nTipo de Sociedad: {self._tipos_sociedad}\nSector: {self._sector}\nLocalidad: {self._localidad}\nTelefono {self._telefono}\n'
     
     # ----------- #
     # # # CIF # # #
     # ----------- #
     @property
     def getCIF(self):
-        return self.__CIF
+        return self._CIF
     
     @getCIF.setter
     def setCIF(self, CIF):
-        self.__CIF = CIF
+        self._CIF = CIF
         
     @getCIF.deleter
     def delCIF(self):
-        del self.__CIF
+        del self._CIF
     # -------------- #
     # # # Nombre # # #
     # -------------- #
@@ -126,18 +120,40 @@ class Empresa:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 class Proyecto(Empresa):
+    v_estado = ["Activo", "Finalizado", "Cancelado"]
+    v_facturable = ["Si", "No"]
     def __init__(self,CIF,nombre_empresa,ID,nombre,estado,facturable,jefe_pr,fecha_in,fecha_fin):
         super().__init__(CIF,nombre_empresa)
         self.__ID_pr=ID
         self.__nombre=nombre
-        self.__estado=estado
-        self.__facturable=facturable
+        self._estado=estado
+        self._facturable=facturable
         self.__jefe_pr=jefe_pr
         self.__fecha_in=fecha_in
         self.__fecha_fin=fecha_fin
     
     def __str__(self):
         return f'Datos del proyecto:\nEmpresa: {self._nombre_empresa}\nProyecto: {self.__nombre}\nEstado del proyecto: {self.__estado}\nFacturable: {self.__facturable}\nJefe del proyecto: {self.__jefe_pr}\nFecha de inicio: {self.__fecha_in}\nFecha fin: {self.__fecha_fin}\n'
+
+    @property
+    def CIF(self):
+        return self._CIF
+    @CIF.setter
+    def CIF(self,nuevo_CIF):
+        self._CIF=nuevo_CIF
+    @CIF.deleter
+    def CIF(self):
+        del self._CIF
+
+    @property
+    def nombre_empresa(self):
+        return self._nombre_empresa
+    @nombre_empresa.setter
+    def nombre_empresa(self,nuevo_nombre_empresa):
+        self._nombre_empresa=nuevo_nombre_empresa
+    @nombre_empresa.deleter
+    def nombre_empresa(self):
+        del self._nombre_empresa
 
     @property
     def ID(self):
@@ -161,23 +177,23 @@ class Proyecto(Empresa):
 
     @property
     def estado(self):
-        return self.__estado
+        return self._estado
     @estado.setter
     def estado(self,nuevo_estado):
-        self.__estado=nuevo_estado
+        self._estado=nuevo_estado
     @estado.deleter
     def estado(self):
-        del self.__estado
+        del self._estado
     
-    @property
+    @property 
     def facturable(self):
-        return self.__facturable
+        return self._facturable
     @facturable.setter
     def facturable(self,nuevo_facturable):
-        self.__facturable=nuevo_facturable
+        self._facturable=nuevo_facturable
     @facturable.deleter
     def facturable(self):
-        del self.__facturable
+        del self._facturable
 
     @property
     def jefe_pr(self):
