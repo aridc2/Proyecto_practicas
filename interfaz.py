@@ -3,7 +3,8 @@ from tkinter import messagebox, ttk
 from tkcalendar import DateEntry
 import mysql.connector as mysql
 from clases import *
-from eventos_validaciones import *
+from eventos_validaciones import FormularioEmpresa, FormularioProyecto
+
 
 
 # Añadir campos desplegables para seleccionar el CIF
@@ -49,9 +50,41 @@ empresas_totales=extraer_todas_las_Empresas()
 empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
 nombres_empresas=list(empresa_dict.keys())
 
+def campos_validos_empresa_insertar(CIF_entry, error_cif,nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
+    formulario = FormularioEmpresa(
+        CIF_entry=CIF_entry, error_cif=error_cif,
+        nombre_empresa_entry=nombre_empresa_entry, error_nombre=error_nombre,
+        Localidad_entry=Localidad_entry, error_localidad=error_localidad,
+        telefono_empresa_entry=telefono_empresa_entry, error_telefono=error_telefono
+    )
+    return formulario.validar()
+
+
+def campos_validos_empresa_actualizar(nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
+    formulario = FormularioEmpresa(
+        nombre_empresa_entry=nombre_empresa_entry, error_nombre=error_nombre,
+        Localidad_entry=Localidad_entry, error_localidad=error_localidad,
+        telefono_empresa_entry=telefono_empresa_entry, error_telefono=error_telefono
+    )
+    return formulario.validar()
+
+
+def campos_validos_proyecto_insertar(ID_proyecto_entry, error_ID_proyecto, nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
+    formulario = FormularioProyecto(
+        ID_proyecto_entry = ID_proyecto_entry, error_ID_proyecto = error_ID_proyecto, 
+        nombre_proyecto_entry = nombre_proyecto_entry, error_nombre_proyecto = error_nombre_proyecto, 
+        jefe_proyecto_entry= jefe_proyecto_entry, error_jefe_proyecto = error_jefe_proyecto
+    )
+    return formulario.validar()
+
+def campos_validos_proyectos_actualizar(nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
+    formulario = FormularioProyecto(
+        nombre_proyecto_entry = nombre_proyecto_entry, error_nombre_proyecto = error_nombre_proyecto, 
+        jefe_proyecto_entry= jefe_proyecto_entry, error_jefe_proyecto = error_jefe_proyecto
+    )
+    return formulario.validar()
 #ventana ocupada de la accion de rellenar los datos de inserccion de empresa y de ejecutar la funcion insert
 def ventana_inserccion_empresa():
-
 
     root.withdraw()
     insertar_win = tk.Toplevel()
@@ -61,6 +94,9 @@ def ventana_inserccion_empresa():
     insertar_win.config(bg="#eaf2f8")
 
     def insert():
+        if not campos_validos_empresa_insertar(CIF_entry, error_cif,nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
+            return #Si algún campo no pasa la validación, salida sin insertar    
+        
         CIF = CIF_entry.get().strip()
         nombre_empresa = nombre_empresa_entry.get().strip()
         tipo_sociedad = tipo_sociedad_combo.get().strip()
@@ -110,30 +146,43 @@ def ventana_inserccion_empresa():
     tk.Label(form_frame, text="CIF:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
     CIF_entry = tk.Entry(form_frame, **entry_style)
     CIF_entry.grid(row=0, column=1)
-    CIF_entry.bind("<FocusOut>", validacion_CIF) # <FocusOut> es el evento que permite que al salir de la caja compruebe si lo introducido sigue las restricciones
+    # CIF_entry.bind("<FocusOut>", validacion_CIF) # <FocusOut> es el evento que permite que al salir de la caja compruebe si lo introducido sigue las restricciones
+    error_cif = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+    error_cif.grid(row=0, column=2, sticky="w")
+
 
     tk.Label(form_frame, text="Nombre Empresa:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
     nombre_empresa_entry = tk.Entry(form_frame, **entry_style)
     nombre_empresa_entry.grid(row=1, column=1)
-    nombre_empresa_entry.bind("<FocusOut>", validacion_nombre)
+    #nombre_empresa_entry.bind("<FocusOut>", validacion_nombre)
+    error_nombre = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+    error_nombre.grid(row=1, column=2, sticky="w")
+
 
     tk.Label(form_frame, text="Tipo de Sociedad:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
     tipo_sociedad_combo = ttk.Combobox(form_frame, values=tipos_sociedad, font=("Helvetica", 12), state="readonly", width=28)
     tipo_sociedad_combo.grid(row=2, column=1)
-
+    
+    
     tk.Label(form_frame, text="Sector:", **label_style).grid(row=3, column=0, sticky="e", padx=10, pady=10)
     Sector_combo = ttk.Combobox(form_frame, values=sectores, font=("Helvetica", 12), state="readonly", width=28)
     Sector_combo.grid(row=3, column=1)
 
+
     tk.Label(form_frame, text="Localidad:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
     Localidad_entry = tk.Entry(form_frame, **entry_style)
     Localidad_entry.grid(row=4, column=1)
-    Localidad_entry.bind("<FocusOut>", validacion_nombre)
+    # Localidad_entry.bind("<FocusOut>", validacion_nombre)
+    error_localidad = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+    error_localidad.grid(row=4, column=2, sticky="w")
+
 
     tk.Label(form_frame, text="Teléfono:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
     telefono_empresa_entry = tk.Entry(form_frame, **entry_style)
     telefono_empresa_entry.grid(row=5, column=1)
-    telefono_empresa_entry.bind ("<FocusOut>", validacion_telefono)
+    # telefono_empresa_entry.bind ("<FocusOut>", validacion_telefono)
+    error_telefono = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+    error_telefono.grid(row=5, column=2, sticky="w")
 
     
     btn_style = {
@@ -198,7 +247,6 @@ def ventana_eliminar_empresa():
     tk.Label(form_frame, text="CIF de la empresa:", font=("Helvetica", 13), bg="#eaf2f8").grid(row=0, column=0, padx=10, pady=10)
     CIF_entry = tk.Entry(form_frame, font=("Helvetica", 13), width=30)
     CIF_entry.grid(row=0, column=1, padx=10, pady=10)
-    CIF_entry.bind("<FocusOut>", validacion_CIF)
     
     btn_frame = tk.Frame(eliminar_win, bg="#eaf2f8")
     btn_frame.pack(pady=20)
@@ -265,9 +313,13 @@ def ventana_actualizar_empresa():
         actualizar_campos_win.minsize(500,500)
         actualizar_campos_win.title('Gestor de proyectos')
         actualizar_campos_win.config(bg="#eaf2f8")
+        
+        # if not campos_validos_empresa(CIF_entry, error_cif,nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
+            #return #Si algún campo no pasa la validación, salida sin insertar  
 
         def update(CIF_buscado):
-
+            if not campos_validos_empresa_actualizar(nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
+                return #Si algún campo no pasa la validación, salida sin insertar    
             nombre_empresa = nombre_empresa_entry.get().strip()
             tipo_sociedad = tipo_sociedad_combo.get()
             Sector = Sector_combo.get()
@@ -314,7 +366,6 @@ def ventana_actualizar_empresa():
                     tk.messagebox.showerror('Error', 'No se ha modificado ningun campo')
                 else:
                     tk.messagebox.showinfo('Status', 'Datos actualizados correctamente')
-
                     
                     nombre_empresa_entry.delete(0, 'end')
                     tipo_sociedad_combo.set('')
@@ -340,7 +391,8 @@ def ventana_actualizar_empresa():
         tk.Label(form_frame, text="Nombre empresa:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
         nombre_empresa_entry = tk.Entry(form_frame, **entry_style)
         nombre_empresa_entry.grid(row=1, column=1)
-        nombre_empresa_entry.bind("<FocusOut>", validacion_nombre)
+        error_nombre = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+        error_nombre.grid(row=1, column=2, sticky="w")
 
         tk.Label(form_frame, text="Tipo de sociedad:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
         tipo_sociedad_combo = ttk.Combobox(form_frame, values=tipos_sociedad, font=("Helvetica", 12), state="readonly", width=28)
@@ -353,12 +405,14 @@ def ventana_actualizar_empresa():
         tk.Label(form_frame, text="Localidad:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
         Localidad_entry = tk.Entry(form_frame, **entry_style)
         Localidad_entry.grid(row=4, column=1)
-        Localidad_entry.bind("<FocusOut>", validacion_nombre)
+        error_localidad = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+        error_localidad.grid(row=4, column=2, sticky="w")
 
         tk.Label(form_frame, text="Teléfono empresa:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
         telefono_empresa_entry = tk.Entry(form_frame, **entry_style)
         telefono_empresa_entry.grid(row=5, column=1)
-        telefono_empresa_entry.bind("<FocusOut>", validacion_telefono)
+        error_telefono = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+        error_telefono.grid(row=5, column=2, sticky="w")
 
         btn_style = {
             "font": ("Helvetica", 12, "bold"),
@@ -540,6 +594,10 @@ def ventana_consultar_empresa():
                 actualizar_proyecto_win.config(bg="#eaf2f8")
                 
                 def update_proyecto(proyecto):
+                    
+                    if not campos_validos_proyectos_actualizar(nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
+                        return
+                    
                     nombre_proyecto = nombre_proyecto_entry.get().strip()
                     estado = estado_combo.get()
                     facturable = facturable_combo.get()
@@ -603,7 +661,14 @@ def ventana_consultar_empresa():
                             fecha_Inicio_entry.delete(0, 'end')
                             fecha_Final_entry.delete(0, 'end')
 
+                        #cursor.execute('SELECT * FROM Proyecto WHERE ID_proyecto = %s AND CIF = %s',(ID_proyecto,CIF))
+                        #resultado= cursor.fetchone()
+                        #proyecto=Proyecto(resultado[0],resultado[1],resultado[2],resultado[3],resultado[4],resultado[5],resultado[6],resultado[7],resultado[8])
                         con.close()
+
+                        actualizar_proyecto_win.withdraw()
+                        mostrar_detalles_ventana(proyecto)
+
                         
                     except Exception as e: #Guarda el error y lo imprime en una ventana emergente
                         tk.messagebox.showerror('Error',str(e))
@@ -621,7 +686,8 @@ def ventana_consultar_empresa():
                 tk.Label(form_frame, text="Nombre:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
                 nombre_proyecto_entry = tk.Entry(form_frame, **entry_style)
                 nombre_proyecto_entry.grid(row=1, column=1)
-                nombre_proyecto_entry.bind("<FocusOut>", validacion_nombre)
+                error_nombre_proyecto = tk.Label(form_frame, text="", fg='red', bg="#eaf2f8", font=("Helvetica", 9))
+                error_nombre_proyecto.grid(row=1, column=2, sticky="w")
 
                 tk.Label(form_frame, text="Estado:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
                 estado_combo = ttk.Combobox(form_frame, values=estado, font=("Helvetica", 12), state="readonly", width=28)
@@ -634,15 +700,20 @@ def ventana_consultar_empresa():
                 tk.Label(form_frame, text="Jefe Proyecto:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
                 jefe_proyecto_entry = tk.Entry(form_frame, **entry_style)
                 jefe_proyecto_entry.grid(row=4, column=1)
-                jefe_proyecto_entry.bind("<FocusOut>", validacion_nombre)
+                error_jefe_proyecto = tk.Label(form_frame, text="", fg='red',bg="#eaf2f8", font=("Helvetica", 9))
+                error_jefe_proyecto.grid(row=4, column=2, sticky="w")
 
                 tk.Label(form_frame, text="Fecha Inicio:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
                 fecha_Inicio_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
                 fecha_Inicio_entry.grid(row=5, column=1)
+                fecha_Inicio_entry.delete(0, 'end')
+
                 
                 tk.Label(form_frame, text="Fecha Finlaización:", **label_style).grid(row=6, column=0, sticky="e", padx=10, pady=10)
                 fecha_Final_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
                 fecha_Final_entry.grid(row=6, column=1)
+                fecha_Final_entry.delete(0, 'end')
+
                 
                 btn_style = {
                 "font": ("Helvetica", 12, "bold"),
@@ -750,6 +821,10 @@ def ventana_consultar_empresa():
             insertar_proyecto_win.config(bg="#eaf2f8")
             
             def insertar_proyecto(CIF):
+                
+                if not campos_validos_proyecto_insertar(ID_proyecto_entry, error_ID_proyecto, nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
+                    return 
+                
                 ID_proyecto = ID_proyecto_entry.get()
                 nombre_proyecto = nombre_proyecto_entry.get()
                 estado = estado_combo.get()
@@ -804,12 +879,15 @@ def ventana_consultar_empresa():
             tk.Label(form_frame, text="ID Proyecto:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
             ID_proyecto_entry = tk.Entry(form_frame, **entry_style)
             ID_proyecto_entry.grid(row=0, column=1)
-            
+            error_ID_proyecto = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+            error_ID_proyecto.grid(row=0, column=2, sticky="w")
 
             tk.Label(form_frame, text="Nombre:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
             nombre_proyecto_entry = tk.Entry(form_frame, **entry_style)
             nombre_proyecto_entry.grid(row=1, column=1)
-            
+            error_nombre_proyecto = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+            error_nombre_proyecto.grid(row=1, column=2, sticky="w")
+
 
             tk.Label(form_frame, text="Estado:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
             estado_combo = ttk.Combobox(form_frame, values=estado, font=("Helvetica", 12), state="readonly", width=28)
@@ -822,7 +900,8 @@ def ventana_consultar_empresa():
             tk.Label(form_frame, text="Jefe Proyecto:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
             jefe_proyecto_entry = tk.Entry(form_frame, **entry_style)
             jefe_proyecto_entry.grid(row=4, column=1)
-            
+            error_jefe_proyecto = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
+            error_jefe_proyecto.grid(row=4, column=2, sticky="w")
 
             tk.Label(form_frame, text="Fecha Inicio:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
             fecha_Inicio_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
