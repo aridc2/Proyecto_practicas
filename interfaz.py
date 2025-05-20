@@ -26,6 +26,29 @@ def cerrar_ventana(ventana_cerrar,ventana_abrir):
     ventana_cerrar.destroy()
     ventana_abrir.deiconify()
 
+
+def extraer_todas_las_Empresas():
+        try:
+            con = mysql.connect(
+                host='localhost',
+                user='root',
+                password='josegras',
+                database='gestionProyectos'
+            )
+            cursor = con.cursor()
+            cursor.execute("SELECT CIF, Nombre FROM Empresa")
+            resultado = cursor.fetchall()
+            
+            con.close()
+            return resultado
+        except Exception as e:
+            tk.messagebox.showinfo('Error',str(e))
+
+empresas_totales=extraer_todas_las_Empresas()
+
+empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
+nombres_empresas=list(empresa_dict.keys())
+
 #ventana ocupada de la accion de rellenar los datos de inserccion de empresa y de ejecutar la funcion insert
 def ventana_inserccion_empresa():
 
@@ -207,7 +230,8 @@ def ventana_actualizar_empresa():
     actualizar_win.config(bg="#eaf2f8")
 
     def buscar():
-        CIF = CIF_entry.get().strip()
+        nombre_seleccionado = empresa_combo.get()
+        CIF = empresa_dict.get(nombre_seleccionado)
         
         if CIF == '':
             tk.messagebox.showerror('Error', 'Por favor introduzca el CIF para poder actualizar los datos')
@@ -227,10 +251,9 @@ def ventana_actualizar_empresa():
                 else:
                     ventana_rellenar_campos(CIF)
 
-                    CIF_entry.delete(0, 'end')
-                    
-
                 con.close()
+                empresa_combo.set('')
+
             except Exception as e:
                 tk.messagebox.showerror('Error',str(e))
 
@@ -294,8 +317,8 @@ def ventana_actualizar_empresa():
 
                     
                     nombre_empresa_entry.delete(0, 'end')
-                    tipo_sociedad_combo.delete(0, 'end')
-                    Sector_combo.delete(0, 'end')
+                    tipo_sociedad_combo.set('')
+                    Sector_combo.set('')
                     Localidad_entry.delete(0, 'end')
                     telefono_empresa_entry.delete(0, 'end')
 
@@ -365,10 +388,9 @@ def ventana_actualizar_empresa():
     label_style = {"font": ("Helvetica", 12), "bg": "#eaf2f8", "fg": "#2e4053"}
     entry_style = {"font": ("Helvetica", 12), "width": 30}
 
-    tk.Label(form_frame, text="CIF:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
-    CIF_entry = tk.Entry(form_frame, **entry_style)
-    CIF_entry.grid(row=0, column=1)
-    CIF_entry.bind("<FocusOut>", validacion_CIF)
+    tk.Label(form_frame, text="Empresa:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
+    empresa_combo = ttk.Combobox(form_frame, values=nombres_empresas, font=("Helvetica", 12), state="readonly", width=28)
+    empresa_combo.grid(row=0, column=1, sticky="w", padx=10, pady=10)
 
     btn_style = {
         "font": ("Helvetica", 12, "bold"),
@@ -432,29 +454,6 @@ def ventana_consultar_empresa():
         CIF = empresa_dict.get(nombre_seleccionado)
         select(CIF)
 
-    def extraer_todas_las_Empresas():
-        try:
-            con = mysql.connect(
-                host='localhost',
-                user='root',
-                password='josegras',
-                database='gestionProyectos'
-            )
-            cursor = con.cursor()
-            cursor.execute("SELECT CIF, Nombre FROM Empresa")
-            resultado = cursor.fetchall()
-            
-            con.close()
-            return resultado
-        except Exception as e:
-            tk.messagebox.showinfo('Error',str(e))
-
-    empresas_totales=extraer_todas_las_Empresas()
-
-    empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
-    nombres_empresas=list(empresa_dict.keys())
-
-
     def ventana_gestionar_proyectos(CIF):
         consultar_win.withdraw()
         listado_proyectos_empresa_win = tk.Toplevel()
@@ -514,7 +513,15 @@ def ventana_consultar_empresa():
             con.close()
             return proyectos
 
-
+        def imprimir_proyectos():
+            proyectos = seleccionar_proyectos_por_empresa(CIF)
+            if not proyectos:
+                tk.messagebox.showinfo('Status', 'No hay proyectos')
+                lista_proyectos.proyectos_data = []  
+            else:
+                lista_proyectos.proyectos_data = proyectos
+                for proyecto in proyectos:
+                    lista_proyectos.insert(tk.END, f'  {proyecto.nombre}')# Mostramos solo el nombre en la lista
         
         def mostrar_detalles_ventana(proyecto):
         
@@ -715,6 +722,8 @@ def ventana_consultar_empresa():
 
             tk.messagebox.showinfo("Status", "Proyecto borrado correctamente")
             con.close()
+            lista_proyectos.delete(0, tk.END)
+            imprimir_proyectos()
 
         def mostrar_detalles(event):
             seleccion = lista_proyectos.curselection()
@@ -768,14 +777,15 @@ def ventana_consultar_empresa():
                         
                         ID_proyecto_entry.delete(0, 'end')
                         nombre_proyecto_entry.delete(0, 'end')
-                        estado_combo.delete(0, 'end')
-                        facturable_combo.delete(0, 'end')
+                        estado_combo.set("")
+                        facturable_combo.set("")
                         jefe_proyecto_entry.delete(0, 'end')
                         fecha_Inicio_entry.delete(0, 'end')
                         fecha_Final_entry.delete(0, 'end')
                         
                         con.close()
-                        
+                        lista_proyectos.delete(0, tk.END)
+                        imprimir_proyectos()
                     except Exception as e: #Guarda el error y lo imprime en una ventana emergente
                         tk.messagebox.showerror('Error',str(e))
                     
@@ -794,12 +804,12 @@ def ventana_consultar_empresa():
             tk.Label(form_frame, text="ID Proyecto:", **label_style).grid(row=0, column=0, sticky="e", padx=10, pady=10)
             ID_proyecto_entry = tk.Entry(form_frame, **entry_style)
             ID_proyecto_entry.grid(row=0, column=1)
-            ID_proyecto_entry.bind("<FocusOut>", validacion_ID)
+            
 
             tk.Label(form_frame, text="Nombre:", **label_style).grid(row=1, column=0, sticky="e", padx=10, pady=10)
             nombre_proyecto_entry = tk.Entry(form_frame, **entry_style)
             nombre_proyecto_entry.grid(row=1, column=1)
-            nombre_proyecto_entry.bind("<FocusOut>", validacion_nombre)
+            
 
             tk.Label(form_frame, text="Estado:", **label_style).grid(row=2, column=0, sticky="e", padx=10, pady=10)
             estado_combo = ttk.Combobox(form_frame, values=estado, font=("Helvetica", 12), state="readonly", width=28)
@@ -812,7 +822,7 @@ def ventana_consultar_empresa():
             tk.Label(form_frame, text="Jefe Proyecto:", **label_style).grid(row=4, column=0, sticky="e", padx=10, pady=10)
             jefe_proyecto_entry = tk.Entry(form_frame, **entry_style)
             jefe_proyecto_entry.grid(row=4, column=1)
-            jefe_proyecto_entry.bind("<FocusOut>", validacion_nombre)
+            
 
             tk.Label(form_frame, text="Fecha Inicio:", **label_style).grid(row=5, column=0, sticky="e", padx=10, pady=10)
             fecha_Inicio_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
@@ -822,6 +832,8 @@ def ventana_consultar_empresa():
             fecha_Final_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd', font=("Helvetica", 12), width=28)
             fecha_Final_entry.grid(row=6, column=1)
 
+            fecha_Inicio_entry.delete(0, 'end')
+            fecha_Final_entry.delete(0, 'end')
             
             btn_style = {
                 "font": ("Helvetica", 12, "bold"),
@@ -848,14 +860,7 @@ def ventana_consultar_empresa():
         lista_proyectos = tk.Listbox(listado_proyectos_empresa_win, width=60, height=10, font=("Helvetica", 12, 'bold'), bg="#d6eaf8",fg="#2e4053", bd=2, relief="solid", selectmode="browse")
         lista_proyectos.pack(pady=10)
 
-        proyectos = seleccionar_proyectos_por_empresa(CIF)
-        if not proyectos:
-            tk.messagebox.showinfo('Status', 'No hay proyectos')
-            lista_proyectos.proyectos_data = []  
-        else:
-            lista_proyectos.proyectos_data = proyectos
-            for proyecto in proyectos:
-                lista_proyectos.insert(tk.END, f'  {proyecto.nombre}')# Mostramos solo el nombre en la lista
+        imprimir_proyectos()
 
         lista_proyectos.bind("<Double-Button-1>", mostrar_detalles)
 
