@@ -27,7 +27,6 @@ def cerrar_ventana(ventana_cerrar,ventana_abrir):
     ventana_cerrar.destroy()
     ventana_abrir.deiconify()
 
-
 def extraer_todas_las_Empresas():
         try:
             con = mysql.connect(
@@ -45,10 +44,7 @@ def extraer_todas_las_Empresas():
         except Exception as e:
             tk.messagebox.showinfo('Error',str(e))
 
-empresas_totales=extraer_todas_las_Empresas()
 
-empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
-nombres_empresas=list(empresa_dict.keys())
 
 def campos_validos_empresa_insertar(CIF_entry, error_cif,nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
     formulario = FormularioEmpresa(
@@ -59,7 +55,6 @@ def campos_validos_empresa_insertar(CIF_entry, error_cif,nombre_empresa_entry, e
     )
     return formulario.validar()
 
-
 def campos_validos_empresa_actualizar(nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
     formulario = FormularioEmpresa(
         nombre_empresa_entry=nombre_empresa_entry, error_nombre=error_nombre,
@@ -67,7 +62,6 @@ def campos_validos_empresa_actualizar(nombre_empresa_entry, error_nombre,Localid
         telefono_empresa_entry=telefono_empresa_entry, error_telefono=error_telefono
     )
     return formulario.validar()
-
 
 def campos_validos_proyecto_insertar(ID_proyecto_entry, error_ID_proyecto, nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
     formulario = FormularioProyecto(
@@ -235,7 +229,6 @@ def ventana_inserccion_empresa():
 
     tk.Button(button_frame, text="Insertar", command=comprobacion_de_cif, **btn_style).grid(row=0, column=0, padx=10)
     tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(insertar_win,root), **btn_style).grid(row=0, column=1, padx=10)
-
 #ventana ocupada de la accion de rellenar el cif y eliminarlo con la funcion delete
 def ventana_eliminar_empresa():
 
@@ -310,6 +303,10 @@ def ventana_actualizar_empresa():
     actualizar_win.minsize(500,300)
     actualizar_win.title('Gestor de proyectos')
     actualizar_win.config(bg="#eaf2f8")
+
+    empresas_totales=extraer_todas_las_Empresas()
+    empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
+    nombres_empresas=list(empresa_dict.keys())
 
     def buscar():
         nombre_seleccionado = empresa_combo.get()
@@ -507,6 +504,10 @@ def ventana_consultar_empresa():
     consultar_win.minsize(800,400)
     consultar_win.title('Gestor de proyectos')
     consultar_win.config(bg="#eaf2f8")
+
+    empresas_totales=extraer_todas_las_Empresas()
+    empresa_dict = {nombre: cif for cif, nombre in empresas_totales}
+    nombres_empresas=list(empresa_dict.keys())
 
     def info_empresas():
 
