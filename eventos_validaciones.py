@@ -79,7 +79,7 @@ class FormularioEmpresa:
                 'entry': kwargs['CIF_entry'],
                 'error_label': kwargs['error_cif'],
                 'validator': validar_cif,
-                'error_msg': "Formato inválido. Ej: A12345678"
+                'error_msg': "Formato válido: 8 numeros y 1 letra. Ej: A12345678"
             }
 
         if 'nombre_empresa_entry' in kwargs and 'error_nombre' in kwargs:
@@ -87,7 +87,7 @@ class FormularioEmpresa:
                 'entry': kwargs['nombre_empresa_entry'],
                 'error_label': kwargs['error_nombre'],
                 'validator': validar_nombres,
-                'error_msg': "Nombre no válido"
+                'error_msg': "Nombre no válido, minimo 3 caracteres. Ej: Capsule Corporation"
             }
 
         if 'Localidad_entry' in kwargs and 'error_localidad' in kwargs:
@@ -95,7 +95,7 @@ class FormularioEmpresa:
                 'entry': kwargs['Localidad_entry'],
                 'error_label': kwargs['error_localidad'],
                 'validator': validar_nombrev2,
-                'error_msg': "Localidad no válida"
+                'error_msg': "Localidad no válida. Ej: Konoha"
             }
 
         if 'telefono_empresa_entry' in kwargs and 'error_telefono' in kwargs:
@@ -152,7 +152,7 @@ class FormularioProyecto:
                 'entry': kwargs['nombre_proyecto_entry'],
                 'error_label': kwargs['error_nombre_proyecto'],
                 'validator': validar_nombres,
-                'error_msg': "Formato inválido. Ej: Scooby Doo Msterios S.A"
+                'error_msg': "Formato inválido. Ej: Proyecto ALICE"
             }
             
         if 'jefe_proyecto_entry' in kwargs and 'error_jefe_proyecto' in kwargs:
@@ -160,7 +160,7 @@ class FormularioProyecto:
                 'entry': kwargs['jefe_proyecto_entry'],
                 'error_label': kwargs['error_jefe_proyecto'],
                 'validator': validar_nombrev2,
-                'error_msg': "Formato inválido. Ej: Mugiwara no Luffy"
+                'error_msg': "Formato inválido. Ej: Monkey D. Luffy"
             }
     
     def validar_campo(self, nombre_campo):

@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkcalendar import DateEntry
 import mysql.connector as mysql
-from config import *
-from validaciones import FormularioEmpresa, FormularioProyecto
+from clases import *
+from eventos_validaciones import FormularioEmpresa, FormularioProyecto
 
 
 
@@ -32,7 +32,7 @@ def extraer_todas_las_Empresas():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -106,7 +106,7 @@ def ventana_inserccion_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -136,7 +136,7 @@ def ventana_inserccion_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -250,7 +250,7 @@ def ventana_eliminar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -319,7 +319,7 @@ def ventana_actualizar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -362,7 +362,7 @@ def ventana_actualizar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                     )
                 cursor = con.cursor()
@@ -517,7 +517,7 @@ def ventana_consultar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -569,7 +569,7 @@ def ventana_consultar_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -646,7 +646,7 @@ def ventana_consultar_empresa():
                         con = mysql.connect(
                             host='localhost',
                             user='root',
-                            password='josegras',
+                            password='ariadne2006',
                             database='gestionProyectos'
                         )
                         cursor = con.cursor()
@@ -817,7 +817,7 @@ def ventana_consultar_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -860,7 +860,7 @@ def ventana_consultar_empresa():
                     con = mysql.connect(
                         host='localhost',
                         user='root',
-                        password='josegras',
+                        password='ariadne2006',
                         database='gestionProyectos'
                     )
                     cursor = con.cursor()
@@ -886,7 +886,7 @@ def ventana_consultar_empresa():
                 
                 if not campos_validos_proyecto_insertar(ID_proyecto_entry, error_ID_proyecto, nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
                     return 
- 
+
                 ID_proyecto = ID_proyecto_entry.get() 
                 nombre_proyecto = nombre_proyecto_entry.get()
                 estado = estado_combo.get()
@@ -896,13 +896,13 @@ def ventana_consultar_empresa():
                 fecha_Final = fecha_Final_entry.get()
 
                 if ID_proyecto == '' or nombre_proyecto == '' or estado == '' or facturable == '' or jefe_proyecto == '' or fecha_Inicio == '' or fecha_Final == '':
-                    tk.messagebox.showerror('ALERT, Por favor introduzca todos los valores para insertar un nuevo proyecto')
+                    tk.messagebox.showerror('ALERT', 'Por favor introduzca todos los valores para insertar un nuevo proyecto')
                 else:
                     try:
                         con = mysql.connect(
                             host='localhost',
                             user='root',
-                            password='josegras',
+                            password='ariadne2006',
                             database='gestionProyectos'
                         )
                         cursor = con.cursor()
@@ -1077,11 +1077,11 @@ root.geometry("700x700+0+0")
 root.minsize(600,700)
 root.config(bg="#eaf2f8")
 
-# logo = tk.PhotoImage(file="C:/Users/User/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
+logo = tk.PhotoImage(file="C:/Users/User/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
 
 
-# titulo = tk.Label(root, image=logo)
-# titulo.pack(pady=20)
+titulo = tk.Label(root, image=logo)
+titulo.pack(pady=20)
 
 
 boton_frame = tk.Frame(root, bg="#eaf2f8")
