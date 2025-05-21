@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkcalendar import DateEntry
 import mysql.connector as mysql
-from clases import *
-from eventos_validaciones import FormularioEmpresa, FormularioProyecto
+from config import *
+from validaciones import FormularioEmpresa, FormularioProyecto
 
 
 
@@ -32,7 +32,7 @@ def extraer_todas_las_Empresas():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='ariadne2006',
+                password='josegras',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -106,7 +106,7 @@ def ventana_inserccion_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='ariadne2006',
+                    password='josegras',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -136,7 +136,7 @@ def ventana_inserccion_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='ariadne2006',
+                password='josegras',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -250,7 +250,7 @@ def ventana_eliminar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='ariadne2006',
+                    password='josegras',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -319,7 +319,7 @@ def ventana_actualizar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='ariadne2006',
+                    password='josegras',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -362,7 +362,7 @@ def ventana_actualizar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='ariadne2006',
+                    password='josegras',
                     database='gestionProyectos'
                     )
                 cursor = con.cursor()
@@ -517,7 +517,7 @@ def ventana_consultar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='ariadne2006',
+                    password='josegras',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -569,7 +569,7 @@ def ventana_consultar_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='ariadne2006',
+                password='josegras',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -646,7 +646,7 @@ def ventana_consultar_empresa():
                         con = mysql.connect(
                             host='localhost',
                             user='root',
-                            password='ariadne2006',
+                            password='josegras',
                             database='gestionProyectos'
                         )
                         cursor = con.cursor()
@@ -817,7 +817,7 @@ def ventana_consultar_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='ariadne2006',
+                password='josegras',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -860,7 +860,7 @@ def ventana_consultar_empresa():
                     con = mysql.connect(
                         host='localhost',
                         user='root',
-                        password='ariadne2006',
+                        password='josegras',
                         database='gestionProyectos'
                     )
                     cursor = con.cursor()
@@ -869,11 +869,11 @@ def ventana_consultar_empresa():
                     con.close()
                     
                     if resultado:
-                        ultimo_id = resultado[0]
-                        numero = int(ultimo_id[1:]) + 1 #Quita la P y suma
+                        ultimo_id = resultado[0] # # Aqui se extrae el ID del proyecto más reciento
+                        numero = int(ultimo_id[1:]) + 1 #Quita la P (El primer caracter de Pxxx) dejando 012 -> Que lo convierte a numero = 12 y suma 1
                         
                     else:
-                        numero = 1
+                        numero = 1 #Si no hay ninguno el Resultado será P001
                         
                     nuevo_id = f'P{numero:03d}' # Mantiene siempre el formato p001, p002...
                     return nuevo_id
@@ -886,8 +886,7 @@ def ventana_consultar_empresa():
                 
                 if not campos_validos_proyecto_insertar(ID_proyecto_entry, error_ID_proyecto, nombre_proyecto_entry, error_nombre_proyecto,jefe_proyecto_entry, error_jefe_proyecto):
                     return 
-
-                ID_proyecto = ID_proyecto_entry.get() 
+                ID_proyecto = ID_proyecto_entry.get()
                 nombre_proyecto = nombre_proyecto_entry.get()
                 estado = estado_combo.get()
                 facturable = facturable_combo.get()
@@ -902,13 +901,13 @@ def ventana_consultar_empresa():
                         con = mysql.connect(
                             host='localhost',
                             user='root',
-                            password='ariadne2006',
+                            password='josegras',
                             database='gestionProyectos'
                         )
                         cursor = con.cursor()
                         
-                        cursor.execute("SELECT COUNT(*) FROM Proyecto WHERE ID_proyecto = %s", (ID_proyecto,))
-                        if cursor.fetchone()[0] > 0:
+                        cursor.execute("SELECT COUNT(*) FROM Proyecto WHERE ID_proyecto = %s", (ID_proyecto,)) # Pregunta a la base de datos cuantos proyectos hay exactamente con ese ID. Si existe devuelve 1 si no un 0
+                        if cursor.fetchone()[0] > 0: # "Si ya existe al menos un proyecto con ese ID". Si es cierto devuelve el mensaje de error de abajo
                             tk.messagebox.showerror("Error", f"El ID de proyecto '{ID_proyecto}' ya existe")
                             return
                         
@@ -929,6 +928,8 @@ def ventana_consultar_empresa():
                         con.close()
                         lista_proyectos.delete(0, tk.END)
                         imprimir_proyectos()
+                        ID_proyecto = generar_id_proyecto()
+                        ID_proyecto_entry.insert(0, ID_proyecto)
                     except Exception as e: #Guarda el error y lo imprime en una ventana emergente
                         tk.messagebox.showerror('Error',str(e))
                     
@@ -950,7 +951,7 @@ def ventana_consultar_empresa():
             error_ID_proyecto = tk.Label(form_frame, text="", fg="red", bg="#eaf2f8", font=("Helvetica", 9))
             error_ID_proyecto.grid(row=0, column=2, sticky="w")
             
-            #Aqui generas el ID solo una vez al abrir la ventana
+            # #Aqui generas el ID solo una vez al abrir la ventana
             ID_generado = generar_id_proyecto()
             ID_proyecto_entry.insert(0,ID_generado)
 
@@ -1077,10 +1078,10 @@ root.geometry("700x700+0+0")
 root.minsize(600,700)
 root.config(bg="#eaf2f8")
 
-logo = tk.PhotoImage(file="C:/Users/User/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
+logo = tk.PhotoImage(file="C:/Users/vocra/OneDrive/Escritorio/Practicas_1ºDAM/Proyecto_Practicas/logo_sinfondo.png")
 
 
-titulo = tk.Label(root, image=logo)
+titulo = tk.Label(root, image=logo, bg="#eaf2f8")
 titulo.pack(pady=20)
 
 
