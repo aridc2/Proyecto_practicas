@@ -33,7 +33,7 @@ def extraer_todas_las_Empresas():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -93,6 +93,7 @@ def ventana_inserccion_empresa():
     insertar_win.title('Gestor de proyectos')
     insertar_win.config(bg="#eaf2f8")
 
+
     def insert():
         if not campos_validos_empresa_insertar(CIF_entry, error_cif,nombre_empresa_entry, error_nombre,Localidad_entry, error_localidad,telefono_empresa_entry, error_telefono):
             return #Si algún campo no pasa la validación, salida sin insertar    
@@ -111,7 +112,7 @@ def ventana_inserccion_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -132,6 +133,39 @@ def ventana_inserccion_empresa():
             except Exception as e: #Guarda el error y lo imprime en una ventana emergente
                 tk.messagebox.showerror('Error',str(e))
 
+    def buscar():
+
+        no_existe=True
+        CIF = CIF_entry.get().strip()
+        
+        try:
+            con = mysql.connect(
+                host='localhost',
+                user='root',
+                password='ariadne2006',
+                database='gestionProyectos'
+            )
+            cursor = con.cursor()
+            cursor.execute("SELECT 1 FROM Empresa WHERE CIF = %s LIMIT 1", (CIF,))
+            resultado = cursor.fetchone()
+            con.close()
+            if resultado != None:
+                tk.messagebox.showinfo('Resultado', 'Se ha encontrado ya una empresa con ese CIF')
+                no_existe=False
+                return no_existe
+            else:
+                return no_existe
+            
+
+        except Exception as e:
+            tk.messagebox.showerror('Error',str(e))
+    
+    def comprobacion_de_cif():
+        if buscar()==True:
+            insert()
+        else:
+            return
+    
     titulo = tk.Label(insertar_win, text="Insertar Empresa", font=("Helvetica", 20, "bold"), bg="#eaf2f8", fg="#2e4053")
     titulo.pack(pady=20)
 
@@ -199,7 +233,7 @@ def ventana_inserccion_empresa():
     button_frame = tk.Frame(insertar_win, bg="#eaf2f8")
     button_frame.pack(pady=20)
 
-    tk.Button(button_frame, text="Insertar", command=insert, **btn_style).grid(row=0, column=0, padx=10)
+    tk.Button(button_frame, text="Insertar", command=comprobacion_de_cif, **btn_style).grid(row=0, column=0, padx=10)
     tk.Button(button_frame, text="Volver", command=lambda: cerrar_ventana(insertar_win,root), **btn_style).grid(row=0, column=1, padx=10)
 
 #ventana ocupada de la accion de rellenar el cif y eliminarlo con la funcion delete
@@ -223,7 +257,7 @@ def ventana_eliminar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -288,7 +322,7 @@ def ventana_actualizar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -331,7 +365,7 @@ def ventana_actualizar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                     )
                 cursor = con.cursor()
@@ -482,7 +516,7 @@ def ventana_consultar_empresa():
                 con = mysql.connect(
                     host='localhost',
                     user='root',
-                    password='josegras',
+                    password='ariadne2006',
                     database='gestionProyectos'
                 )
                 cursor = con.cursor()
@@ -534,7 +568,7 @@ def ventana_consultar_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -611,7 +645,7 @@ def ventana_consultar_empresa():
                         con = mysql.connect(
                             host='localhost',
                             user='root',
-                            password='josegras',
+                            password='ariadne2006',
                             database='gestionProyectos'
                         )
                         cursor = con.cursor()
@@ -782,7 +816,7 @@ def ventana_consultar_empresa():
             con = mysql.connect(
                 host='localhost',
                 user='root',
-                password='josegras',
+                password='ariadne2006',
                 database='gestionProyectos'
             )
             cursor = con.cursor()
@@ -840,7 +874,7 @@ def ventana_consultar_empresa():
                         con = mysql.connect(
                             host='localhost',
                             user='root',
-                            password='josegras',
+                            password='ariadne2006',
                             database='gestionProyectos'
                         )
                         cursor = con.cursor()
@@ -1005,7 +1039,7 @@ root.geometry("700x700+0+0")
 root.minsize(600,700)
 root.config(bg="#eaf2f8")
 
-logo = tk.PhotoImage(file="C:/Users/Ari/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
+logo = tk.PhotoImage(file="C:/Users/User/Documents/PRACTICAS/PYTHON/proyecto_practicas/logo_sinfondo.png")
 
 
 titulo = tk.Label(root, image=logo)
